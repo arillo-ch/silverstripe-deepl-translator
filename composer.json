@@ -1,0 +1,33 @@
+{
+    "name": "arillo/silverstripe-deepl-translator",
+    "type": "silverstripe-vendormodule",
+    "description": "Adds deepl translations to silverstripe CMS",
+    "keywords": [
+        "silverstripe",
+        "translation",
+        "deepl"
+    ],
+    "authors": [
+        {
+            "name": "Arillo Team",
+            "email": "hello@arillo.ch"
+        }
+    ],
+    "homepage": "https://github.com/arillo-ch/silverstripe-deepl-translator",
+    "support": {
+        "issues": "https://github.com/arillo-ch/silverstripe-deepl-translator/issues"
+    },
+    "require": {
+        "tractorcow/silverstripe-fluent": "^5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Arillo\\Deepl\\": "src/"
+        }
+    },
+    "extra": {
+        "expose": [
+            "client"
+        ]
+    }
+}
