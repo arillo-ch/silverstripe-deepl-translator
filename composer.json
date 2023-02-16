@@ -18,7 +18,8 @@
         "issues": "https://github.com/arillo-ch/silverstripe-deepl-translator/issues"
     },
     "require": {
-        "tractorcow/silverstripe-fluent": "^5"
+        "tractorcow/silverstripe-fluent": "^5",
+        "deeplcom/deepl-php": "^1.3.0"
     },
     "autoload": {
         "psr-4": {
