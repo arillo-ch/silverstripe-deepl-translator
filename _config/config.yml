@@ -1,18 +1,18 @@
 ---
 Name: silverstripe-deepl-translator
-After: fluentcms
 ---
-
 SilverStripe\Admin\LeftAndMain:
-    extra_requirements_javascript:
-        - arillo/silverstripe-deepl-translator:client/deepl.js
+  extra_requirements_css:
+    - arillo/silverstripe-deepl-translator:client/deepl.css
+  extra_requirements_javascript:
+    - arillo/silverstripe-deepl-translator:client/deepl.js
 
-# ---
-# Name: autotranslate-routes
-# After:
-#     - rootroutes
-#     - coreroutes
-# ---
-# SilverStripe\Control\Director:
-#     rules:
-#         autotranslate//translate: Bratiask\Autotranslate\Controller\GoogleTranslateController
+---
+Name: silverstripe-deepl-translator-routes
+After:
+  - '#rootroutes'
+  - '#coreroutes'
+---
+SilverStripe\Control\Director:
+  rules:
+    api/deepl/translate: Arillo\Deepl\TranslationController
