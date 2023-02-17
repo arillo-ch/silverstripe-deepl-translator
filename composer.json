@@ -2,6 +2,7 @@
     "name": "arillo/silverstripe-deepl-translator",
     "type": "silverstripe-vendormodule",
     "description": "Adds deepl translations to silverstripe CMS",
+    "license": "BSD-3-Clause",
     "keywords": [
         "silverstripe",
         "translation",

@@ -1,6 +1,7 @@
 # arillo/silverstripe-deepl-translator
 
 Adds Deepl translation API to a Fluent translated SilverStripe CMS.
+For now it only adds UI-Elements to texty fields (TextField, TextareaField, HTMLEditorField) to translate their contents.
 
 ## Installation
 
@@ -16,7 +17,7 @@ Create a Deepl API key and add it to your `.env`:
 DEEPL_APIKEY="<YOUR_DEEPL_APIKEY>"
 ```
 
-Configure ypur DataObjects to display the Deepl translation handles.
+Configure your DataObjects to display the Deepl translation handles.
 
 **NOTE:** It is important, that this configurations happens **AFTER** fluent was added to these DataObjects. Otherwise the UI will not appear.
 
@@ -57,3 +58,7 @@ Arillo\Elements\ElementBase:
   extensions:
     - Arillo\Deepl\TranslationExtension
 ```
+
+## Thanks
+
+This module is heavily inspired by: [bratiask/silverstripe-autotranslate](https://github.com/bratiask/silverstripe-autotranslate)
