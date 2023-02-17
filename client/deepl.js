@@ -102,6 +102,7 @@ function DeeplField($) {
         textarea.val(value);
         if ('tinyMCE' === textarea.data('editor')) {
           tinymce.get(textarea.attr('id')).load();
+          // tinymce.get(textarea.attr('id')).setContent(value);
         }
       } else {
         input.val(value);

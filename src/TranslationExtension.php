@@ -107,7 +107,8 @@ class TranslationExtension extends DataExtension
             return '';
         }
 
-        return htmlspecialchars($string);
+        return $string;
+        // return htmlspecialchars($string);
     }
 
     private function sourceLocale(): string
