@@ -17,6 +17,7 @@ DEEPL_APIKEY="<YOUR_DEEPL_APIKEY>"
 ```
 
 Configure ypur DataObjects to display the Deepl translation handles.
+
 **NOTE:** It is important, that this configurations happens **AFTER** fluent was added to these DataObjects. Otherwise the UI will not appear.
 
 Let's assume you have the following fluent config, named `myfluentcms`:
