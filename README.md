@@ -35,7 +35,6 @@ SilverStripe\i18n\i18n:
   default_locale: de_CH
 
 Arillo\Elements\ElementBase:
-  frontend_publish_required: false
   extensions:
     - 'TractorCow\Fluent\Extension\FluentVersionedExtension'
 ```
