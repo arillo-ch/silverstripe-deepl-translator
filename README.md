@@ -36,7 +36,6 @@ SilverStripe\i18n\i18n:
 
 Arillo\Elements\ElementBase:
   frontend_publish_required: false
-  # cms_publish_required: false
   extensions:
     - 'TractorCow\Fluent\Extension\FluentVersionedExtension'
 ```
@@ -58,6 +57,10 @@ Arillo\Elements\ElementBase:
   extensions:
     - Arillo\Deepl\TranslationExtension
 ```
+
+## CMS
+
+In CMS you have to add `USE_DEEPL` permission to non-admin groups.
 
 ## Thanks
 
