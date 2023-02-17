@@ -1,4 +1,4 @@
-.autotranslate {
+.deepl {
     display: inline-block;
     padding: 0;
     border: none;
@@ -8,16 +8,16 @@
     cursor: pointer;
 }
 
-.autotranslate .font-icon-translatable {
+.deepl .font-icon-translatable {
     pointer-events: none;
 }
 
-.autotranslate .caret {
+.deepl .caret {
     margin-left: 5px;
     pointer-events: none;
 }
 
-.autotranslate ul {
+.deepl ul {
     display: none;
     position: absolute;
     z-index: 1;
@@ -27,13 +27,14 @@
     list-style: none;
     margin-top: 5px;
     padding: 0;
+    width: 240px;
 }
 
-.autotranslate ul li {
+.deepl ul li {
     padding: 5px 10px;
 }
 
-.autotranslate ul li:hover {
+.deepl ul li:hover {
     background-color: #d8e4eb;
 }
 

@@ -6,24 +6,24 @@ jQuery(function () {
 function DeeplField($) {
   return {
     init: function () {
-      var body = $('body');
       console.log('DeeplField');
+      var body = $('body');
 
-      body.on('click', '.js-autotranslate', function (event) {
+      body.on('click', '.js-deepl', function (event) {
         setTimeout(function () {
           $(event.target).find('ul').toggle();
         }, 50);
       });
 
       body.on('click', function (event) {
-        if (false === $(event.target).hasClass('js-autotranslate')) {
-          $('.js-autotranslate').find('ul').hide();
+        if (false === $(event.target).hasClass('js-deepl')) {
+          $('.js-deepl').find('ul').hide();
         }
       });
 
       body.on(
         'click',
-        '.js-autotranslate-translate',
+        '.js-deepl-translate',
         function (event) {
           event.preventDefault();
           var elements = this.elements(event);
@@ -31,18 +31,26 @@ function DeeplField($) {
             '<div class="translate-in-progress js-translate-in-progress"><span>Translating...</span></div>'
           );
           elements.label.find('ul').hide();
+          var payload = {
+            fromLocale: elements.label.data('source-lang'),
+            toLocale: elements.label.data('target-lang'),
+            text:
+              elements.textarea.length > 0
+                ? elements.textarea.val()
+                : elements.input.val(),
+          };
+
+          setTimeout(function () {
+            elements.holder.find('.js-translate-in-progress').fadeOut(200);
+          }, 10000);
+
           $.post(
-            'autotranslate/translate',
-            {
-              source: elements.label.data('source-lang'),
-              target: elements.label.data('target-lang'),
-              query:
-                elements.textarea.length > 0
-                  ? elements.textarea.val()
-                  : elements.input.val(),
-            },
+            'api/deepl/translate',
+            payload,
             function (response) {
-              this.setValue(elements.input, elements.textarea, response);
+              if (response.text) {
+                this.setValue(elements.input, elements.textarea, response.text);
+              }
               elements.holder.find('.js-translate-in-progress').fadeOut(200);
             }.bind(this)
           );
@@ -51,7 +59,7 @@ function DeeplField($) {
 
       body.on(
         'click',
-        '.js-autotranslate-reset',
+        '.js-deepl-reset',
         function (event) {
           var elements = this.elements(event);
           this.setValue(
@@ -65,10 +73,9 @@ function DeeplField($) {
 
       body.on(
         'click',
-        '.js-autotranslate-revert',
+        '.js-deepl-revert',
         function (event) {
           var elements = this.elements(event);
-          console.log(elements);
           this.setValue(
             elements.input,
             elements.textarea,
@@ -80,7 +87,7 @@ function DeeplField($) {
     },
 
     elements: function (event) {
-      var $label = $(event.target).closest('.autotranslate');
+      var $label = $(event.target).closest('.deepl');
       var $holder = $label.closest('.form-group').find('.form__field-holder');
       return {
         label: $label,

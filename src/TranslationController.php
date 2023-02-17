@@ -22,12 +22,12 @@ class TranslationController extends Controller implements PermissionProvider
 
     public function index(HTTPRequest $request)
     {
-        // if (!Permission::check(self::USE_DEEPL)) {
-        //     return $this->response
-        //         ->addHeader('Content-Type', 'application/json')
-        //         ->setBody(json_encode(['message' => 'Unautherized']))
-        //         ->setStatusCode(401);
-        // }
+        if (!Permission::check(self::USE_DEEPL)) {
+            return $this->response
+                ->setStatusCode(401)
+                ->addHeader('X-Status', rawurlencode('Unautherized'))
+                ->setBody('Unautherized');
+        }
 
         $toLanguage = Deepl::language_from_locale(
             $request->postVar('toLocale')
@@ -39,9 +39,9 @@ class TranslationController extends Controller implements PermissionProvider
 
         if (!$toLanguage || !$text) {
             return $this->response
-                ->addHeader('Content-Type', 'application/json')
-                ->setBody(json_encode(['message' => 'Bad request']))
-                ->setStatusCode(400);
+                ->setStatusCode(400)
+                ->addHeader('X-Status', rawurlencode('Bad request'))
+                ->setBody('Bad request');
         }
 
         try {
@@ -54,9 +54,9 @@ class TranslationController extends Controller implements PermissionProvider
                 );
         } catch (\Throwable $th) {
             return $this->response
-                ->addHeader('Content-Type', 'application/json')
-                ->setBody(json_encode(['message' => 'Bad request']))
-                ->setStatusCode(400);
+                ->setStatusCode(400)
+                ->addHeader('X-Status', rawurlencode($th->getMessage()))
+                ->setBody($th->getMessage());
         }
     }
 }

@@ -7,6 +7,7 @@ use SilverStripe\Forms\FormField;
 use SilverStripe\ORM\DataExtension;
 use TractorCow\Fluent\Model\Locale;
 use SilverStripe\ORM\FieldType\DBField;
+use SilverStripe\Security\Permission;
 use SilverStripe\View\ArrayData;
 use TractorCow\Fluent\State\FluentState;
 
@@ -25,6 +26,9 @@ class TranslationExtension extends DataExtension
 
     public function updateCMSFields(FieldList $fields): void
     {
+        if (!Permission::check(TranslationController::USE_DEEPL)) {
+            return;
+        }
         if (null !== Deepl::get_apikey()) {
             $localisedDataObject = $this->localisedDataObject(
                 $this->owner,
