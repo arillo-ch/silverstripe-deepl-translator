@@ -1,6 +1,6 @@
 en:
   Arillo\Deepl:
-    USE_DEEPL: 'Can user use deepl in CMS'
-    Translate: 'Translate'
-    RevertTo: 'Revert to {lang}'
     ResetChanges: 'Reset changes'
+    RevertTo: 'Revert to "{lang}"'
+    TranslateFrom: Translate from {locale}
+    USE_DEEPL: 'Can user use deepl in CMS'

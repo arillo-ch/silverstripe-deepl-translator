@@ -63,4 +63,4 @@ In CMS you have to add `USE_DEEPL` permission to non-admin groups.
 
 ## Thanks
 
-This module is heavily inspired by: [bratiask/silverstripe-autotranslate](https://github.com/bratiask/silverstripe-autotranslate)
+This module is inspired by: [bratiask/silverstripe-autotranslate](https://github.com/bratiask/silverstripe-autotranslate)

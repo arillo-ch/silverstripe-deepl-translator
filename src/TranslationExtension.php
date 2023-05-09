@@ -1,14 +1,15 @@
 <?php
 namespace Arillo\Deepl;
 
+use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\View\ArrayData;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormField;
 use SilverStripe\ORM\DataExtension;
 use TractorCow\Fluent\Model\Locale;
-use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\Security\Permission;
-use SilverStripe\View\ArrayData;
+use SilverStripe\ORM\FieldType\DBField;
 use TractorCow\Fluent\State\FluentState;
 
 class TranslationExtension extends DataExtension
@@ -21,7 +22,6 @@ class TranslationExtension extends DataExtension
         FormField::SCHEMA_DATA_TYPE_HTML,
     ];
 
-    private static $sourceLocale;
     private static $targetLocale;
 
     public function updateCMSFields(FieldList $fields): void
@@ -30,39 +30,63 @@ class TranslationExtension extends DataExtension
             return;
         }
         if (null !== Deepl::get_apikey()) {
-            $localisedDataObject = $this->localisedDataObject(
-                $this->owner,
-                $this->sourceLocale()
-            );
-
-            $sourceLanguage = Deepl::language_from_locale(
-                $this->sourceLocale()
-            );
             $targetLanguage = Deepl::language_from_locale(
                 $this->currentLocale()
             );
+
+            $localized = new ArrayList();
+            $record = $this->owner;
+            Locale::get()->each(function ($locale) use ($record, $localized) {
+                FluentState::singleton()
+                    ->setLocale($locale->Locale)
+                    ->withState(function () use ($record, $localized, $locale) {
+                        $localized->push(
+                            new ArrayData([
+                                'Locale' => $locale,
+                                'Record' => DataObject::get(
+                                    $record->ClassName
+                                )->byID($record->ID),
+                            ])
+                        );
+                    });
+            });
+
             foreach ($fields->dataFields() as $field) {
-                if (
-                    $this->isFieldAutotranslatable($field) &&
-                    $sourceLanguage != $targetLanguage
-                ) {
+                if ($this->isFieldAutotranslatable($field)) {
+                    $currentValues = new ArrayList();
+
+                    $localized->each(function ($r) use (
+                        $currentValues,
+                        $field,
+                        $targetLanguage
+                    ) {
+                        $language = Deepl::language_from_locale(
+                            $r->Locale->Locale
+                        );
+
+                        $currentValues->push(
+                            new ArrayData([
+                                'Language' => $language,
+                                'Locale' => $r->Locale,
+                                'IsCurrent' => $language == $targetLanguage,
+                                'Value' => $this->forAttr(
+                                    $r->Record->{$field->getName()}
+                                ),
+                            ])
+                        );
+                    });
+
                     $field->setTitle(
                         DBField::create_field(
                             'HTMLFragment',
                             (new ArrayData([
-                                'SourceLanguage' => $sourceLanguage,
                                 'TargetLanguage' => $targetLanguage,
-                                'CurrentValue' => $this->htmlEncode(
-                                    $this->owner->{$field->getName()}
-                                ),
-                                'SourceValue' =>
-                                    null === $localisedDataObject
-                                        ? ''
-                                        : $this->htmlEncode(
-                                            $localisedDataObject->{$field->getName()}
-                                        ),
+                                'CurrentValue' =>
+                                    $this->forAttr(
+                                        $this->owner->{$field->getName()}
+                                    ) ?? '',
+                                'CurrentValues' => $currentValues,
                                 'FieldTitle' => $field->Title(),
-                                'HasLocalizedObject' => !!$localisedDataObject,
                             ]))->renderWith(get_class($this))
                         )
                     );
@@ -71,23 +95,9 @@ class TranslationExtension extends DataExtension
         }
     }
 
-    private function localisedDataObject(
-        DataObject $dataObject,
-        string $locale
-    ): ?DataObject {
-        if ($this->sourceLocale() === $this->currentLocale()) {
-            return null;
-        }
-
-        $originalLocale = $this->currentLocale();
-        FluentState::singleton()->setLocale($locale);
-
-        $localisedDataObject = DataObject::get($dataObject->ClassName)->byID(
-            $dataObject->ID
-        );
-        FluentState::singleton()->setLocale($originalLocale);
-
-        return $localisedDataObject;
+    private function forAttr($value)
+    {
+        return str_replace(["\r\n", "\r", "\n"], '', $value);
     }
 
     private function isFieldAutotranslatable(FormField $field): bool
@@ -99,27 +109,6 @@ class TranslationExtension extends DataExtension
             ) &&
             false === $field->isReadOnly() &&
             'URLSegment' !== $field->getName();
-    }
-
-    private function htmlEncode(?string $string): string
-    {
-        if (null === $string) {
-            return '';
-        }
-
-        return $string;
-        // return htmlspecialchars($string);
-    }
-
-    private function sourceLocale(): string
-    {
-        if (null === self::$sourceLocale) {
-            self::$sourceLocale = Locale::singleton()
-                ->getChain()
-                ->first()->Locale;
-        }
-
-        return self::$sourceLocale;
     }
 
     private function currentLocale(): string
