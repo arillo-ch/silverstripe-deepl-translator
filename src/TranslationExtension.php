@@ -37,18 +37,21 @@ class TranslationExtension extends DataExtension
             $localized = new ArrayList();
             $record = $this->owner;
             Locale::get()->each(function ($locale) use ($record, $localized) {
-                FluentState::singleton()
-                    ->setLocale($locale->Locale)
-                    ->withState(function () use ($record, $localized, $locale) {
-                        $localized->push(
-                            new ArrayData([
-                                'Locale' => $locale,
-                                'Record' => DataObject::get(
-                                    $record->ClassName
-                                )->byID($record->ID),
-                            ])
-                        );
-                    });
+                FluentState::singleton()->withState(function () use (
+                    $record,
+                    $localized,
+                    $locale
+                ) {
+                    FluentState::singleton()->setLocale($locale->Locale);
+                    $localized->push(
+                        new ArrayData([
+                            'Locale' => $locale,
+                            'Record' => DataObject::get(
+                                $record->ClassName
+                            )->byID($record->ID),
+                        ])
+                    );
+                });
             });
 
             foreach ($fields->dataFields() as $field) {
