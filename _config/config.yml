@@ -15,4 +15,9 @@ After:
 ---
 SilverStripe\Control\Director:
   rules:
-    api/deepl/translate: Arillo\Deepl\TranslationController
+    api/deepl: Arillo\Deepl\TranslationController
+    # api/deepl/translate: Arillo\Deepl\TranslationController
+
+SilverStripe\SiteConfig\SiteConfig:
+  extensions:
+   - Arillo\Deepl\SiteConfig

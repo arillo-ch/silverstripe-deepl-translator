@@ -19,22 +19,43 @@ class Deepl
         return Environment::getEnv('DEEPL_APIKEY');
     }
 
-    public static function translate(
-        string $text,
-        string $toLanguage,
-        ?string $fromLanguage = null
-    ): ?TextResult {
+    public static function create_translator(): ?Translator
+    {
         $apiKey = Environment::getEnv('DEEPL_APIKEY');
 
         if (!$apiKey) {
             return null;
         }
 
-        $translator = new Translator($apiKey, [
+        return new Translator($apiKey, [
             TranslatorOptions::TIMEOUT => self::config()->timeout,
             TranslatorOptions::MAX_RETRIES => self::config()->max_retries,
         ]);
+    }
+
+    public static function translate(
+        string $text,
+        string $toLanguage,
+        ?string $fromLanguage = null
+    ): ?TextResult {
+        $translator = self::create_translator();
+
+        if (!$translator) {
+            return null;
+        }
+
         return $translator->translateText($text, $fromLanguage, $toLanguage);
+    }
+
+    public static function usage()
+    {
+        $translator = self::create_translator();
+
+        if (!$translator) {
+            return null;
+        }
+
+        return $translator->getUsage();
     }
 
     public static function language_from_locale(?string $locale = null): ?string

@@ -4,3 +4,6 @@ en:
     RevertTo: 'Revert to "{lang}"'
     TranslateFrom: Translate from {locale}
     USE_DEEPL: 'Can user use deepl in CMS'
+  Arillo\Deepl\DeeplUsageField:
+    Title: 'Deepl usage'
+    Of: 'of'

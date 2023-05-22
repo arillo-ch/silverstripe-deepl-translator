@@ -4,3 +4,7 @@ de:
     RevertTo: '"{lang}" wiederherstellen'
     TranslateFrom: Aus {locale} übersetzen
     USE_DEEPL: 'Berechtigung deepl im CMS zu benutzen'
+
+  Arillo\Deepl\DeeplUsageField:
+    Title: 'Deepl-Verbrauch'
+    Of: 'von'
