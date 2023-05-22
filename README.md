@@ -57,6 +57,30 @@ Arillo\Elements\ElementBase:
     - Arillo\Deepl\TranslationExtension
 ```
 
+## Alternate field value gathering for field-wise translator
+
+To preload current values for field-wise translations this module uses the following method `$record->{$fieldName}`.
+However, it is possible to specify an alternate data source by implementing a class method called `deeplFieldValueFromRecord` to overwrite the default behavior, e.g.:
+
+```
+    // in some DataObject class
+    // ...
+
+    public function deeplFieldValueFromRecord($fieldName)
+    {
+        switch ($fieldName) {
+            case 'AOLink_Title':
+                return $this->LinkObject()->Title;
+
+            case 'AOLink_URL':
+                return $this->LinkObject()->URL;
+
+            default:
+                return $this->{$fieldName};
+        }
+    }
+```
+
 ## CMS
 
 In CMS you have to add `USE_DEEPL` permission to non-admin groups.

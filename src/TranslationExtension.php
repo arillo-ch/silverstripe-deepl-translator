@@ -74,7 +74,10 @@ class TranslationExtension extends DataExtension
                                 'Locale' => $r->Locale,
                                 'IsCurrent' => $language == $targetLanguage,
                                 'Value' => $this->forAttr(
-                                    $r->Record->{$field->getName()}
+                                    $this->deeplFieldValueFromRecord(
+                                        $r->Record,
+                                        $field->getName()
+                                    )
                                 ),
                             ])
                         );
@@ -87,7 +90,10 @@ class TranslationExtension extends DataExtension
                                 'TargetLanguage' => $targetLanguage,
                                 'CurrentValue' =>
                                     $this->forAttr(
-                                        $this->owner->{$field->getName()}
+                                        $this->deeplFieldValueFromRecord(
+                                            $this->owner,
+                                            $field->getName()
+                                        )
                                     ) ?? '',
                                 'CurrentValues' => $currentValues,
                                 'FieldTitle' => $field->Title(),
@@ -97,6 +103,24 @@ class TranslationExtension extends DataExtension
                 }
             }
         }
+    }
+
+    /**
+     * Gets field value for a given DataObject.
+     * Uses alternate getter method deeplFieldValueFromRecord($fieldName) if is implemented in that class.
+     *
+     * @param DataObject $record
+     * @param string $fieldName
+     * @return mixed
+     */
+    private function deeplFieldValueFromRecord(
+        DataObject $record,
+        string $fieldName
+    ) {
+        if ($record->hasMethod('deeplFieldValueFromRecord')) {
+            return $record->deeplFieldValueFromRecord($fieldName);
+        }
+        return $record->{$fieldName};
     }
 
     private function forAttr($value)
