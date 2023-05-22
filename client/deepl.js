@@ -7,20 +7,24 @@ jQuery(function () {
 function DeeplUsageField($) {
   return {
     init: function () {
-      $.post(
-        'api/deepl/usage',
-        {},
-        function (response) {
-          if (response.character) {
-            if (response.character.count) {
-              $('.deepl-usage-count').text(response.character.count);
-            }
-            if (response.character.limit) {
-              $('.deepl-usage-limit').text(response.character.limit);
-            }
-          }
-        }.bind(this)
-      );
+      $('.deepl-usage-field').entwine({
+        onmatch: function (event) {
+          $.post(
+            'api/deepl/usage',
+            {},
+            function (response) {
+              if (response.character) {
+                if (response.character.count) {
+                  $('.deepl-usage-count').text(response.character.count);
+                }
+                if (response.character.limit) {
+                  $('.deepl-usage-limit').text(response.character.limit);
+                }
+              }
+            }.bind(this)
+          );
+        },
+      });
     },
   };
 }
