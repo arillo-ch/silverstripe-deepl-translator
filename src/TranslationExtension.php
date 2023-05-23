@@ -36,6 +36,11 @@ class TranslationExtension extends DataExtension
 
             $localized = new ArrayList();
             $record = $this->owner;
+
+            if (!$record->exists()) {
+                return;
+            }
+
             Locale::get()->each(function ($locale) use ($record, $localized) {
                 FluentState::singleton()->withState(function ($state) use (
                     $record,
@@ -43,7 +48,6 @@ class TranslationExtension extends DataExtension
                     $locale
                 ) {
                     $state->setLocale($locale->Locale);
-                    // FluentState::singleton()->setLocale($locale->Locale);
                     $localized->push(
                         new ArrayData([
                             'Locale' => $locale,
@@ -109,14 +113,17 @@ class TranslationExtension extends DataExtension
      * Gets field value for a given DataObject.
      * Uses alternate getter method deeplFieldValueFromRecord($fieldName) if is implemented in that class.
      *
-     * @param DataObject $record
+     * @param DataObject|null $record
      * @param string $fieldName
      * @return mixed
      */
     private function deeplFieldValueFromRecord(
-        DataObject $record,
+        ?DataObject $record,
         string $fieldName
     ) {
+        if (!$record) {
+            return null;
+        }
         if ($record->hasMethod('deeplFieldValueFromRecord')) {
             return $record->deeplFieldValueFromRecord($fieldName);
         }
