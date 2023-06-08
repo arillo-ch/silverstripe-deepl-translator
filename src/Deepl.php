@@ -5,14 +5,16 @@ use DeepL\TextResult;
 use DeepL\Translator;
 use DeepL\TranslatorOptions;
 use SilverStripe\Core\Environment;
-use SilverStripe\Core\Config\Configurable;
 
 class Deepl
 {
-    use Configurable;
+    public static $timeout = TranslatorOptions::DEFAULT_TIMEOUT;
+    public static $max_retries = TranslatorOptions::DEFAULT_MAX_RETRIES;
 
-    private static $timeout = TranslatorOptions::DEFAULT_TIMEOUT;
-    private static $max_retries = TranslatorOptions::DEFAULT_MAX_RETRIES;
+    public static function module_path()
+    {
+        return substr(realpath(__DIR__), 0, -4);
+    }
 
     public static function get_apikey()
     {
@@ -28,8 +30,8 @@ class Deepl
         }
 
         return new Translator($apiKey, [
-            TranslatorOptions::TIMEOUT => self::config()->timeout,
-            TranslatorOptions::MAX_RETRIES => self::config()->max_retries,
+            TranslatorOptions::TIMEOUT => self::$timeout,
+            TranslatorOptions::MAX_RETRIES => self::$max_retries,
         ]);
     }
 

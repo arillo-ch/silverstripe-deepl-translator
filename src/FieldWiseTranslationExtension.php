@@ -12,7 +12,7 @@ use SilverStripe\Security\Permission;
 use SilverStripe\ORM\FieldType\DBField;
 use TractorCow\Fluent\State\FluentState;
 
-class TranslationExtension extends DataExtension
+class FieldWiseTranslationExtension extends DataExtension
 {
     const FLUENT_LOCALISED_FIELD_CSS_CLASS = 'fluent__localised-field';
 

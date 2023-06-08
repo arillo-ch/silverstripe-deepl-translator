@@ -39,7 +39,9 @@ Arillo\Elements\ElementBase:
     - 'TractorCow\Fluent\Extension\FluentVersionedExtension'
 ```
 
-Like this it is possible to apply the deepl config after `#myfluentcms`:
+## Field-wise translator
+
+Apply the deepl config after `#myfluentcms`:
 
 ```
 ---
@@ -50,11 +52,11 @@ After:
 ---
 SilverStripe\CMS\Model\SiteTree:
   extensions:
-    - Arillo\Deepl\TranslationExtension
+    - Arillo\Deepl\FieldWiseTranslationExtension
 
 Arillo\Elements\ElementBase:
   extensions:
-    - Arillo\Deepl\TranslationExtension
+    - Arillo\Deepl\FieldWiseTranslationExtension
 ```
 
 ## Alternate field value gathering for field-wise translator
@@ -80,6 +82,32 @@ However, it is possible to specify an alternate data source by implementing a cl
         }
     }
 ```
+
+## DataObject-wise translator
+
+@todo description
+
+- automatically translates all translatable fields of a DataObject
+- define relations that also will be translated
+
+```
+---
+Name: mydeepl
+After: 
+ - '#myfluentcms'
+ - '#silverstripe-deepl-translator'
+---
+SilverStripe\CMS\Model\SiteTree:
+  extensions:
+    - Arillo\Deepl\DataObjectWiseTranslationExtension
+
+Arillo\Elements\ElementBase:
+  extensions:
+    - Arillo\Deepl\DataObjectWiseTranslationExtension
+```
+
+
+
 
 ## CMS
 
