@@ -44,7 +44,9 @@ class Deepl
             return null;
         }
 
-        return $translator->translateText($text, $fromLanguage, $toLanguage);
+        return $translator->translateText($text, $fromLanguage, $toLanguage, [
+            'tag_handling' => 'html',
+        ]);
     }
 
     public static function usage()
