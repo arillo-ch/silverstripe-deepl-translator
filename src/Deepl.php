@@ -35,8 +35,14 @@ class Deepl
         ]);
     }
 
+    /**
+     * @param @param $text string|string[]
+     * @param string $toLanguage
+     * @param string|null $fromLanguage
+     * @return TextResult|null
+     */
     public static function translate(
-        string $text,
+        $text,
         string $toLanguage,
         ?string $fromLanguage = null
     ): ?TextResult {
@@ -46,7 +52,9 @@ class Deepl
             return null;
         }
 
-        return $translator->translateText($text, $fromLanguage, $toLanguage);
+        return $translator->translateText($text, $fromLanguage, $toLanguage, [
+            'tag_handling' => 'html',
+        ]);
     }
 
     public static function usage()
