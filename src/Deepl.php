@@ -39,13 +39,13 @@ class Deepl
      * @param @param $text string|string[]
      * @param string $toLanguage
      * @param string|null $fromLanguage
-     * @return TextResult|null
+     * @return TextResult|array
      */
     public static function translate(
         $text,
         string $toLanguage,
         ?string $fromLanguage = null
-    ): ?TextResult {
+    ) {
         $translator = self::create_translator();
 
         if (!$translator) {

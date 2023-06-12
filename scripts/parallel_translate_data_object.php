@@ -24,21 +24,19 @@ if (
 require $_GET['basepath'] . '/vendor/autoload.php';
 
 use SilverStripe\Core\CoreKernel;
-// use Arillo\Deepl\Deepl;
 use Arillo\Deepl\DataObjectWiseTranslationExtension;
-// use function Amp\Promise\wait;
-// use function Amp\ParallelFunctions\parallelMap;
 
-var_dump('translate_data_object');
-var_dump($_GET);
+var_dump('parallel_translate_data_object');
 
 (new CoreKernel($_GET['basepath']))->boot();
-
+$start = microtime(true);
 $r = DataObjectWiseTranslationExtension::parallel_translate_data_object(
     $_GET['classname'],
     $_GET['id'],
     $_GET['to'],
     $_GET['from']
 );
+$duration = microtime(true) - $start;
+var_dump("Translations took {$duration}");
 
 exit(0);
