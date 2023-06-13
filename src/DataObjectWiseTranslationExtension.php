@@ -33,9 +33,16 @@ class DataObjectWiseTranslationExtension extends DataExtension
         $class = get_class($this->owner);
         $id = $this->owner->ID;
 
-        exec(
-            "php -f {$path}/scripts/parallel_translate_data_object.php basepath='{$basePath}' classname='{$class}' id={$id} from='{$fromLocale}' to='{$toLocale}'",
-            $result
+        // exec(
+        //     "php -f {$path}/scripts/parallel_translate_data_object.php basepath='{$basePath}' classname='{$class}' id={$id} from='{$fromLocale}' to='{$toLocale}'",
+        //     $result
+        // );
+
+        $result = self::serial_translate_data_object(
+            $class,
+            $id,
+            $toLocale,
+            $fromLocale
         );
 
         if ($this->owner->hasMethod('afterDeeplTranslateWithRelations')) {
@@ -43,6 +50,77 @@ class DataObjectWiseTranslationExtension extends DataExtension
         }
 
         return $result;
+    }
+
+    public static function serial_translate_data_object(
+        string $classname,
+        int $id,
+        string $toLocale,
+        string $fromLocale
+    ) {
+        $translations = FluentState::singleton()->withState(function (
+            $state
+        ) use ($classname, $id, $toLocale, $fromLocale) {
+            $state->setLocale($fromLocale);
+            $recordsCollection = new ArrayList();
+            $sourceRecord = $classname::get()->byId($id);
+
+            $recordsCollection = self::add_to_records_collection(
+                $recordsCollection,
+                $sourceRecord
+            );
+
+            $recordsCollection = self::add_relations_to_records_collection(
+                $recordsCollection,
+                $sourceRecord
+            );
+
+            // $result = ParallelTranslator::run(
+            //     $recordsCollection,
+            //     Deepl::language_from_locale($toLocale),
+            //     Deepl::language_from_locale($fromLocale)
+            // );
+
+            $result = [];
+
+            $to = Deepl::language_from_locale($toLocale);
+            $from = Deepl::language_from_locale($fromLocale);
+
+            foreach ($recordsCollection as $item) {
+                $item->setField(
+                    'Results',
+                    Deepl::translate($item->getField('Texts'), $to, $from)
+                );
+                $result[] = $item;
+            }
+
+            return $result;
+        });
+
+        FluentState::singleton()->withState(function ($state) use (
+            $translations,
+            $toLocale
+        ) {
+            $state->setLocale($toLocale);
+            foreach ($translations as $translation) {
+                $class = $translation->ClassName;
+                if ($record = $class::get()->byId($translation->ID)) {
+                    $update = [];
+                    for ($i = 0; $i < count($translation->Fields); $i++) {
+                        $update[$translation->Fields[$i]] =
+                            $translation->Results[$i]->text;
+                    }
+
+                    $record->update($update)->write();
+                    if (
+                        $record->hasExtension(Versioned::class) &&
+                        $record->isPublished()
+                    ) {
+                        $record->doPublish();
+                    }
+                }
+            }
+        });
     }
 
     /**
