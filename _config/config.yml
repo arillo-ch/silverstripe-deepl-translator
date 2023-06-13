@@ -12,11 +12,13 @@ Name: silverstripe-deepl-translator-routes
 After:
   - '#rootroutes'
   - '#coreroutes'
+  - '#basei18n'
+  - '#fluentcms'
+  - '#fluentcms-pages'
 ---
 SilverStripe\Control\Director:
   rules:
     api/deepl: Arillo\Deepl\TranslationController
-    # api/deepl/translate: Arillo\Deepl\TranslationController
 
 SilverStripe\SiteConfig\SiteConfig:
   extensions:
@@ -25,3 +27,7 @@ SilverStripe\SiteConfig\SiteConfig:
 SilverStripe\Admin\LeftAndMain:
   extensions:
     DeeplCMSMainExtension: Arillo\Deepl\DeeplCMSMainExtension
+
+SilverStripe\Versioned\VersionedGridFieldItemRequest:
+  extensions:
+    DeeplGridFieldExtension: Arillo\Deepl\DeeplGridFieldExtension

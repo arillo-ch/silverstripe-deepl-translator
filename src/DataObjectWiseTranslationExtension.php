@@ -20,9 +20,7 @@ class DataObjectWiseTranslationExtension extends DataExtension
 
     public function updateCMSActions(FieldList $actions)
     {
-        // $this->updateSavePublishActions($actions);
-        // $this->updateRestoreAction($actions);
-        $this->updateFluentActions($actions, $this->owner);
+        $this->updateFluentDeeplActions($actions, $this->owner);
     }
 
     public function deeplTranslateWithRelations($toLocale, $fromLocale)
@@ -39,13 +37,12 @@ class DataObjectWiseTranslationExtension extends DataExtension
             "php -f {$path}/scripts/parallel_translate_data_object.php basepath='{$basePath}' classname='{$class}' id={$id} from='{$fromLocale}' to='{$toLocale}'",
             $result
         );
-        // \SilverStripe\Dev\Debug::dump($result);
 
         if ($this->owner->hasMethod('afterDeeplTranslateWithRelations')) {
             $this->owner->afterDeeplTranslateWithRelations();
         }
 
-        // die();
+        return $result;
     }
 
     /**

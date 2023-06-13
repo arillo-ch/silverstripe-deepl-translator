@@ -1,19 +1,30 @@
 <?php
+
 namespace Arillo\Deepl;
 
 use SilverStripe\Core\Extension;
+use SilverStripe\Forms\FieldList;
 use TractorCow\Fluent\Model\Locale;
-use SilverStripe\CMS\Controllers\CMSMain;
+use SilverStripe\Control\Controller;
+use SilverStripe\Forms\GridField\GridFieldDetailForm_ItemRequest;
 
 /**
- * @property CMSMain $owner
+ * @property GridFieldDetailForm_ItemRequest $owner
  */
-class DeeplCMSMainExtension extends Extension
+class DeeplGridFieldExtension extends Extension
 {
+    use DeeplAdminTrait;
+
     private static $allowed_actions = ['deepl_translate_from'];
+
+    public function updateFormActions(FieldList $actions)
+    {
+        $this->updateFluentDeeplActions($actions, $this->owner->getRecord());
+    }
 
     public function deepl_translate_from($data, $form)
     {
+        $controller = Controller::curr();
         if (
             isset($data['action_deepl_translate_from']) &&
             is_array($data['action_deepl_translate_from']) &&
@@ -22,14 +33,14 @@ class DeeplCMSMainExtension extends Extension
                 array_keys($data['action_deepl_translate_from'])[0]
             )) &&
             ($currentLocale = Locale::getCurrentLocale()) &&
-            ($record = $this->owner->currentPage())
+            ($record = $this->owner->getRecord())
         ) {
             $record->deeplTranslateWithRelations(
                 $currentLocale->Locale,
                 $toLocale->Locale
             );
 
-            $this->owner->getResponse()->addHeader(
+            $controller->getResponse()->addHeader(
                 'X-Status',
                 rawurlencode(
                     _t(
@@ -42,12 +53,16 @@ class DeeplCMSMainExtension extends Extension
                 )
             );
 
-            return $this->owner
-                ->getResponseNegotiator()
-                ->respond($this->owner->request);
+            $controller->getRequest()->addHeader('X-Pjax', 'Content');
+
+            // append some random url param to force the reload.
+            return $controller->redirect(
+                $this->owner->Link() . '?translated=' . time(),
+                302
+            );
         }
 
-        return $this->owner
+        return $controller
             ->getResponse()
             ->addHeader(
                 'X-Status',

@@ -1,16 +1,22 @@
 <?php
 namespace Arillo\Deepl;
 
+use SilverStripe\Forms\Tab;
+use SilverStripe\Forms\TabSet;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
 use TractorCow\Fluent\Model\Locale;
+use SilverStripe\Control\Controller;
 use SilverStripe\Security\Permission;
 use TractorCow\Fluent\State\FluentState;
 
 trait DeeplAdminTrait
 {
-    protected function updateFluentActions(FieldList $actions, $record)
-    {
+    protected function updateFluentDeeplActions(
+        FieldList $actions,
+        $record,
+        bool $forceMenu = false
+    ) {
         if (
             !FluentState::singleton()->getLocale() ||
             !Permission::check(Deepl::USE_DEEPL)
@@ -18,8 +24,29 @@ trait DeeplAdminTrait
             return;
         }
 
+        $rootMenu = $actions->fieldByName('FluentMenu');
+        if (!$rootMenu && $forceMenu) {
+            $rootMenu = TabSet::create('FluentMenu')
+                ->setTemplate('FluentAdminTabSet')
+
+                ->addExtraClass(
+                    'ss-ui-action-tabset action-menus fluent-actions-menu noborder'
+                );
+            $moreOptions = Tab::create(
+                'FluentMenuOptions',
+                _t(
+                    'TractorCow\Fluent\Extension\Traits\FluentAdminTrait.Localisation',
+                    'Localisation'
+                )
+            );
+            $moreOptions->addExtraClass('popover-actions-simulate');
+            $rootMenu->push($moreOptions);
+
+            $actions->insertBefore('RightGroup', $rootMenu);
+        }
+
         if (
-            ($rootMenu = $actions->fieldByName('FluentMenu')) &&
+            $rootMenu &&
             ($moreOptions = $rootMenu->fieldByName('FluentMenuOptions'))
         ) {
             $currentLocale = Locale::getCurrentLocale();
