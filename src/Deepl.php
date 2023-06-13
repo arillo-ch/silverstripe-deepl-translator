@@ -5,11 +5,24 @@ use DeepL\TextResult;
 use DeepL\Translator;
 use DeepL\TranslatorOptions;
 use SilverStripe\Core\Environment;
+use SilverStripe\Security\PermissionProvider;
 
-class Deepl
+class Deepl implements PermissionProvider
 {
+    const USE_DEEPL = 'USE_DEEPL';
+
     public static $timeout = TranslatorOptions::DEFAULT_TIMEOUT;
     public static $max_retries = TranslatorOptions::DEFAULT_MAX_RETRIES;
+
+    public function providePermissions()
+    {
+        return [
+            self::USE_DEEPL => _t(
+                'Arillo\Deepl.USE_DEEPL',
+                'Can user use deepl in CMS'
+            ),
+        ];
+    }
 
     public static function module_path()
     {

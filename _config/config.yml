@@ -21,3 +21,7 @@ SilverStripe\Control\Director:
 SilverStripe\SiteConfig\SiteConfig:
   extensions:
    - Arillo\Deepl\SiteConfig
+
+SilverStripe\Admin\LeftAndMain:
+  extensions:
+    DeeplCMSMainExtension: Arillo\Deepl\DeeplCMSMainExtension

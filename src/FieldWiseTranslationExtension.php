@@ -26,7 +26,7 @@ class FieldWiseTranslationExtension extends DataExtension
 
     public function updateCMSFields(FieldList $fields): void
     {
-        if (!Permission::check(TranslationController::USE_DEEPL)) {
+        if (!Permission::check(Deepl::USE_DEEPL)) {
             return;
         }
         if (null !== Deepl::get_apikey()) {

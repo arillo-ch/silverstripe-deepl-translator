@@ -4,23 +4,10 @@ namespace Arillo\Deepl;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Security\Permission;
-use SilverStripe\Security\PermissionProvider;
 
-class TranslationController extends Controller implements PermissionProvider
+class TranslationController extends Controller
 {
-    const USE_DEEPL = 'USE_DEEPL';
-
     private static $allowed_actions = ['translate', 'usage'];
-
-    public function providePermissions()
-    {
-        return [
-            self::USE_DEEPL => _t(
-                'Arillo\Deepl.USE_DEEPL',
-                'Can user use deepl in CMS'
-            ),
-        ];
-    }
 
     public function index(HTTPRequest $request)
     {
@@ -29,7 +16,7 @@ class TranslationController extends Controller implements PermissionProvider
 
     public function translate(HTTPRequest $request)
     {
-        if (!Permission::check(self::USE_DEEPL)) {
+        if (!Permission::check(Deepl::USE_DEEPL)) {
             return $this->respondUnauthorized();
         }
 
@@ -63,7 +50,7 @@ class TranslationController extends Controller implements PermissionProvider
 
     public function usage(HTTPRequest $request)
     {
-        if (!Permission::check(self::USE_DEEPL)) {
+        if (!Permission::check(Deepl::USE_DEEPL)) {
             return $this->respondUnauthorized();
         }
 

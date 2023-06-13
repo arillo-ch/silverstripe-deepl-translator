@@ -8,3 +8,10 @@ de:
   Arillo\Deepl\DeeplUsageField:
     Title: 'Deepl-Verbrauch'
     Of: 'von'
+
+  Arillo\Deepl\DeeplAdminTrait:
+    deepl_translate_from: 'Mit Deepl aus {locale} übersetzen'
+
+  Arillo\Deepl\DeeplCMSMainExtension:
+    TranslationSuccess: 'Die Seite wurde aus {locale} übersetzt'
+    TranslationError: 'Die Seite konnte nicht übersetzt werden'

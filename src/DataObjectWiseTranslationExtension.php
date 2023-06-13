@@ -4,6 +4,7 @@ namespace Arillo\Deepl;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\View\ArrayData;
+use SilverStripe\Forms\FieldList;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Versioned\Versioned;
@@ -11,9 +12,18 @@ use TractorCow\Fluent\State\FluentState;
 
 class DataObjectWiseTranslationExtension extends DataExtension
 {
+    use DeeplAdminTrait;
+
     const TRANSLATABLE_DB_FIELDS = ['Varchar', 'Text', 'HTMLText'];
 
     private static $deepl_dataobject_included_relations = [];
+
+    public function updateCMSActions(FieldList $actions)
+    {
+        // $this->updateSavePublishActions($actions);
+        // $this->updateRestoreAction($actions);
+        $this->updateFluentActions($actions, $this->owner);
+    }
 
     public function deeplTranslateWithRelations($toLocale, $fromLocale)
     {
@@ -35,7 +45,7 @@ class DataObjectWiseTranslationExtension extends DataExtension
             $this->owner->afterDeeplTranslateWithRelations();
         }
 
-        die();
+        // die();
     }
 
     /**
@@ -68,15 +78,10 @@ class DataObjectWiseTranslationExtension extends DataExtension
                 $sourceRecord
             );
 
-            // \SilverStripe\Dev\Debug::dump(
-            //     $sourceRecord->config()->deepl_dataobject_included_relations
-            // );
-
             $recordsCollection = self::add_relations_to_records_collection(
                 $recordsCollection,
                 $sourceRecord
             );
-            // \SilverStripe\Dev\Debug::dump($recordsCollection);
 
             $result = ParallelTranslator::run(
                 $recordsCollection,
@@ -130,10 +135,6 @@ class DataObjectWiseTranslationExtension extends DataExtension
             is_array($relations)
         ) {
             foreach ($relations as $relation) {
-                // $d = DataObject::getSchema()->hasManyComponent(
-                //     $classname,
-                //     $relation
-                // );
                 $many = $rootRecord->hasMany();
                 $many = array_merge($many, $rootRecord->manyMany());
 
