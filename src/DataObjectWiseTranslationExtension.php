@@ -52,6 +52,11 @@ class DataObjectWiseTranslationExtension extends DataExtension
         return $result;
     }
 
+    public static function get_translator_class()
+    {
+        return SerialTranslator::class;
+    }
+
     public static function serial_translate_data_object(
         string $classname,
         int $id,
@@ -75,24 +80,11 @@ class DataObjectWiseTranslationExtension extends DataExtension
                 $sourceRecord
             );
 
-            // $result = ParallelTranslator::run(
-            //     $recordsCollection,
-            //     Deepl::language_from_locale($toLocale),
-            //     Deepl::language_from_locale($fromLocale)
-            // );
-
-            $result = [];
-
-            $to = Deepl::language_from_locale($toLocale);
-            $from = Deepl::language_from_locale($fromLocale);
-
-            foreach ($recordsCollection as $item) {
-                $item->setField(
-                    'Results',
-                    Deepl::translate($item->getField('Texts'), $to, $from)
-                );
-                $result[] = $item;
-            }
+            $result = self::get_translator_class()::run(
+                $recordsCollection,
+                Deepl::language_from_locale($toLocale),
+                Deepl::language_from_locale($fromLocale)
+            );
 
             return $result;
         });
