@@ -81,6 +81,17 @@ class Deepl implements PermissionProvider
         return $translator->getUsage();
     }
 
+    public static function list_glossaries()
+    {
+        $translator = self::create_translator();
+
+        if (!$translator) {
+            return null;
+        }
+
+        return $translator->listGlossaries();
+    }
+
     public static function language_from_locale(?string $locale = null): ?string
     {
         $parsed = locale_parse($locale);

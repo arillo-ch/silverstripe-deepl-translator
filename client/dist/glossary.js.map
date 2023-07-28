@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../js/glossary.js"],
+  "sourcesContent": ["export default (config) => ({\n  ...config,\n  init() {\n    console.log('deeplGlossary', config);\n    console.log('deeplGlossary', config);\n    // console.log('deeplGlossary', config);\n    // this.listGlossaries();\n  },\n\n  // async listGlossaries() {\n  //   fetch(this.apiUrl(), {\n  //     method: 'get',\n  //   })\n  //     .then(async (response) => {\n  //       console.log(response);\n  //       const data = await response.json();\n\n  //       if (!response.ok) {\n  //         const error = data?.message || response.status;\n  //         return Promise.reject(error);\n  //       }\n  //     })\n  //     .catch((error) => {\n  //       console.error(error);\n  //     });\n  // },\n\n  // apiUrl(append = null) {\n  //   const baseUrl = `https://api-free.deepl.com/v2/glossaries`;\n  //   if (!append) return baseUrl;\n\n  //   return `${baseUrl}/${append}`;\n  // },\n});\n"],
+  "mappings": ";;AAAA,MAAO,mBAAQ,CAAC,YAAY;AAAA,IAC1B,GAAG;AAAA,IACH,OAAO;AACL,cAAQ,IAAI,iBAAiB,MAAM;AACnC,cAAQ,IAAI,iBAAiB,MAAM;AAAA,IAGrC;AAAA,EA0BF;",
+  "names": []
+}
