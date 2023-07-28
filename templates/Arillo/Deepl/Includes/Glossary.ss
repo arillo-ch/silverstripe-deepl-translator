@@ -24,11 +24,11 @@
         </tr>
       </template>
 
-      <template x-if="!!newRow">
+      <template x-if="!!newEntry">
         <tr>
           <template x-for="locale in locales">
             <td>
-              <input type="text" :name="`new[${locale.Lang}]`" x-model="newRow[`${locale.Lang}`]">
+              <input type="text" :name="`new[${locale.Lang}]`" x-model="newEntry[`${locale.Lang}`]">
             </td>
           </template>
           <td>
