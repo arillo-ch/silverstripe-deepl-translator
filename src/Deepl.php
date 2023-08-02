@@ -1,6 +1,7 @@
 <?php
 namespace Arillo\Deepl;
 
+use DeepL\GlossaryEntries;
 use DeepL\TextResult;
 use DeepL\Translator;
 use DeepL\TranslatorOptions;
@@ -90,6 +91,55 @@ class Deepl implements PermissionProvider
         }
 
         return $translator->listGlossaries();
+    }
+
+    public static function create_glossary(
+        $name,
+        $sourceLang,
+        $targetLang,
+        $entries
+    ) {
+        $translator = self::create_translator();
+
+        if (!$translator) {
+            return null;
+        }
+
+        return $translator->createGlossary(
+            $name,
+            $sourceLang,
+            $targetLang,
+            GlossaryEntries::fromEntries($entries)
+        );
+    }
+
+    public static function get_glossary_entries($id)
+    {
+        $translator = self::create_translator();
+
+        if (!$translator) {
+            return null;
+        }
+
+        return $translator->getGlossaryEntries($id);
+    }
+
+    public static function delete_unused_glossaries()
+    {
+        $translator = self::create_translator();
+
+        if (!$translator) {
+            return null;
+        }
+
+        $activeGlossariesIds = Glossary::get()->column('GlossaryId');
+        $glossaries = $translator->listGlossaries();
+
+        foreach ($glossaries as $glossary) {
+            if (!in_array($glossary->glossaryId, $activeGlossariesIds)) {
+                $translator->deleteGlossary($glossary);
+            }
+        }
     }
 
     public static function language_from_locale(?string $locale = null): ?string

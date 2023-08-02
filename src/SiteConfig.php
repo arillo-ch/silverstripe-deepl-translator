@@ -8,7 +8,10 @@ class SiteConfig extends DataExtension
 {
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->addFieldToTab('Root.Deepl', new DeeplUsageField('DeeplUsage'));
+        $fields->addFieldsToTab('Root.Deepl', [
+            new DeeplUsageField('DeeplUsage'),
+            new GlossaryEditor('GlossaryEditor'),
+        ]);
         return $fields;
     }
 }

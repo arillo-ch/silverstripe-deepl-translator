@@ -1,11 +1,1 @@
-(() => {
-  // client/js/glossary.js
-  var glossary_default = (config) => ({
-    ...config,
-    init() {
-      console.log("deeplGlossary", config);
-      console.log("deeplGlossary", config);
-    }
-  });
-})();
-//# sourceMappingURL=glossary.js.map
+(()=>{var o="",l=n=>({...n,newEntry:null,glossaryEntries:[],glossaryEntriesForTable:[],search:o,isLoading:!0,sorter:{field:null,dir:"ASC"},init(){this.$watch("glossaryEntries",()=>this.computeGlossaryEntriesForTable()),this.$watch("sorter",()=>this.computeGlossaryEntriesForTable()),this.$watch("search",()=>this.computeGlossaryEntriesForTable()),this.fetchGlossaryEntries(),this.sorter={field:this.locales.find(s=>s.IsGlobalDefault==!0).Lang,dir:"ASC"}},async fetchGlossaryEntries(){this.isLoading=!0,fetch(this.apiUrl("glossaryEntries"),{method:"get"}).then(async s=>{let t=await s.json();if(!s.ok){let r=t?.message||s.status;return Promise.reject(r)}this.prepareGlossaryEntries(t),this.setupNewEntry(),this.isLoading=!1}).catch(s=>{console.error(s)})},prepareGlossaryEntries(s){this.glossaryEntries=s.map((t,r)=>({...t,id:r}))},setupNewEntry(){let s={};this.locales.forEach(t=>{s[t.Lang]=""}),this.newEntry=s},createNewEntry(){let s={...this.newEntry,id:this.glossaryEntries.length};this.glossaryEntries.push(s),this.setupNewEntry()},computeGlossaryEntriesForTable(){let s=this.locales.map(({Lang:r})=>r),t=this.search.toLowerCase();this.glossaryEntriesForTable=[...this.glossaryEntries.filter(r=>s.reduce((e,i)=>!e&&r[i]&&r[i]!==o&&r[i].toLowerCase().includes(t)?!0:e,!1)).sort((r,e)=>{let i=r[this.sorter.field].toLowerCase(),a=e[this.sorter.field].toLowerCase();return i>a?this.sorter.dir=="ASC"?1:-1:i<a?this.sorter.dir=="ASC"?-1:1:0})]},sorterBy(s){this.sorter.field===s?this.sorter.dir=this.sorter.dir=="ASC"?"DESC":"ASC":this.sorter={field:s,dir:"ASC"}},async saveGlossaries(){this.isLoading=!0;let s=new FormData;s.append("glossaryEntries",JSON.stringify(this.glossaryEntries)),fetch(this.apiUrl("saveGlossaries"),{method:"post",body:s}).then(async t=>{let r=await t.json();if(!t.ok){let e=r?.message||t.status;return Promise.reject(e)}this.prepareGlossaryEntries(r),this.setupNewEntry()}).catch(t=>{console.error(t)}).finally(()=>this.isLoading=!1)},removeEntry(s){this.glossaryEntries=[...this.glossaryEntries.filter(t=>t.id!==s)]},apiUrl(s=null){return s?`${this.apiBase}${s}`:this.apiBase}});})();

@@ -7,15 +7,14 @@
     "url": "git@github.com:arillo-ch/silverstripe-deepl-translator.git"
   },
   "scripts": {
-    "dev": "esbuild client/js/glossary.js --sourcemap --bundle --outdir=client/dist --watch",
-    "build": "esbuild client/js/glossary.js --bundle --minify --outdir=client/dist"
+    "dev": "esbuild client/js/glossaryEditor.js --sourcemap --bundle --outdir=client/dist --watch",
+    "build": "esbuild client/js/glossaryEditor.js --bundle --minify --outdir=client/dist"
   },
   "license": "MIT",
   "devDependencies": {
     "esbuild": "^0.15.8"
   },
   "dependencies": {
-    "alpinejs": "^3.11.1",
-    "sortablejs": "^1.15.0"
+    "alpinejs": "^3.11.1"
   }
 }

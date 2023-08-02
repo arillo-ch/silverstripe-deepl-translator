@@ -158,8 +158,3 @@ esbuild@^0.15.8:
     esbuild-windows-32 "0.15.18"
     esbuild-windows-64 "0.15.18"
     esbuild-windows-arm64 "0.15.18"
-
-sortablejs@^1.15.0:
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/sortablejs/-/sortablejs-1.15.0.tgz#53230b8aa3502bb77a29e2005808ffdb4a5f7e2a"
-  integrity sha512-bv9qgVMjUMf89wAvM6AxVvS/4MX3sPeN0+agqShejLU5z5GX4C75ow1O2e5k4L6XItUyAK3gH6AxSbXrOM5e8w==

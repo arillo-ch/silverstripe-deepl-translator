@@ -1,13 +1,24 @@
 <?php
 namespace Arillo\Deepl;
 
+use PhpParser\Node\Expr\Cast\Array_;
+use TractorCow\Fluent\Model\Locale;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\Security\Permission;
+use SilverStripe\View\ArrayData;
 
 class ApiController extends Controller
 {
-    private static $allowed_actions = ['translate', 'usage', 'listGlossaries'];
+    private static $allowed_actions = [
+        'translate',
+        'usage',
+        'glossaryEntries',
+        'saveGlossaries',
+    ];
+
     private static $url_segment = 'api/deepl';
 
     public function index(HTTPRequest $request)
@@ -64,19 +75,117 @@ class ApiController extends Controller
         }
     }
 
-    public function listGlossaries(HTTPRequest $request)
+    public function glossaryEntries(HTTPRequest $request)
     {
         // if (!Permission::check(Deepl::USE_DEEPL)) {
         //     return $this->respondUnauthorized();
         // }
 
-        try {
+        return $this->response
+            ->addHeader('Content-Type', 'application/json')
+            ->setBody(
+                json_encode($this->accumulateGlossaries()->toNestedArray())
+            );
+    }
+
+    public function accumulateGlossaries(): ArrayList
+    {
+        $acc = new ArrayList();
+
+        Glossary::get()
+            ->filter(['GlossaryId:not' => [null, '']])
+            ->each(function (Glossary $glossary) use ($acc) {
+                try {
+                    $entries = Deepl::get_glossary_entries(
+                        $glossary->GlossaryId
+                    );
+
+                    foreach ($entries->getEntries() as $source => $target) {
+                        if ($e = $acc->find($glossary->SourceLang, $source)) {
+                            $e->setField($glossary->TargetLang, $target);
+                        } else {
+                            $acc->push(
+                                new ArrayData([
+                                    $glossary->SourceLang => $source,
+                                    $glossary->TargetLang => $target,
+                                ])
+                            );
+                        }
+                    }
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
+            });
+
+        return $acc;
+    }
+
+    public function saveGlossaries(HTTPRequest $request)
+    {
+        if (!Permission::check(Deepl::USE_DEEPL)) {
+            return $this->respondUnauthorized();
+        }
+
+        if (
+            null != $request->postVar('glossaryEntries') &&
+            ($glossaryEntries = json_decode(
+                $request->postVar('glossaryEntries'),
+                true
+            )) &&
+            $glossaryEntries
+        ) {
+            $locales = Locale::get()->sort('IsGlobalDefault DESC');
+            $defaultLocale = $locales->find('IsGlobalDefault', true);
+            $sourceLang = Deepl::language_from_locale($defaultLocale->Locale);
+            $now = DBDatetime::now()->format(DBDatetime::ISO_DATETIME);
+
+            foreach ($locales as $locale) {
+                if ($locale->ID !== $defaultLocale->ID) {
+                    $targetLang = Deepl::language_from_locale($locale->Locale);
+                    $entries = [];
+                    foreach ($glossaryEntries as $glossaryEntry) {
+                        if (
+                            isset($glossaryEntry[$sourceLang]) &&
+                            isset($glossaryEntry[$targetLang])
+                        ) {
+                            $entries[trim($glossaryEntry[$sourceLang])] = trim(
+                                $glossaryEntry[$targetLang]
+                            );
+                        }
+                    }
+
+                    $deeplGlossary = Deepl::create_glossary(
+                        "{$sourceLang} - {$targetLang} ({$now})",
+                        $sourceLang,
+                        $targetLang,
+                        $entries
+                    );
+
+                    $glossary = Glossary::find_or_create(
+                        $sourceLang,
+                        $targetLang
+                    );
+
+                    $glossary
+                        ->update([
+                            'GlossaryId' => $deeplGlossary->glossaryId,
+                        ])
+                        ->write();
+                }
+            }
+
+            Deepl::delete_unused_glossaries();
+
             return $this->response
                 ->addHeader('Content-Type', 'application/json')
-                ->setBody(json_encode(Deepl::list_glossaries()));
-        } catch (\Throwable $th) {
-            return $this->resondErrorMessage($th);
+                ->setBody(
+                    json_encode([
+                        'glossaryEntries' => $this->accumulateGlossaries()->toNestedArray(),
+                    ])
+                );
         }
+
+        return $this->resondErrorMessage('insufficiant arguments');
     }
 
     public function respondUnauthorized()

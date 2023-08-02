@@ -1,38 +1,54 @@
-<div x-data="deeplGlossary($GlossaryConfig)">
-  <table class="w-full">
+<div class="deeplGlossary" x-data="deeplGlossary($GlossaryConfig)">
+  <div>
+    <div>
+      <input type="text" x-model="search">
+    </div>
+    <div>
+      <button @click="search = ''" :disabled="search == '' || isLoading" class="btn">
+        x
+      </button>
+    </div>
+    <div>
+      <button @click="saveGlossaries" :disabled="isLoading" class="btn">
+        Save
+      </button>
+    </div>
+  </div>
+  <table class="table grid-field__table" cellpadding="0" cellspacing="0">
     <thead>
-      <tr>
+      <tr class="sortable-header">
         <template x-for="locale in locales">
-          <th>
-            <span x-text="locale.Lang"></span>
+          <th class="main">
+            <button type="button" @click="sorterBy(locale.Lang)" class="action btn btn-big grid-field__sort">
+              <span class="btn__title" x-text="locale.Lang"></span>
+            </button>
           </th>
         </template>
-        <th>Actions</th>
+        <th></th>
       </tr>
     </thead>
-    <tbody>
-      <template x-for="entry in glossaryEntries">
-        <tr>
+    <tbody class="ss-gridfield-items">
+      <template x-if="!!newEntry">
+        <tr class="ss-gridfield-item first last odd">
           <template x-for="locale in locales">
             <td>
-              <input type="text" x-model="entry[`${locale.Lang}`]" :value="entry[`${locale.Lang}`]">
+              <input type="text" :disabled="isLoading" x-model="newEntry[`${locale.Lang}`]">
             </td>
           </template>
-          <td>
-          <button @click="removeEntry(entry.id)" class="btn">-</button>
-        </td>
+          <td class="grid-field__col-compact action-menu">
+            <button @click="createNewEntry" :disabled="isLoading" class="btn btn--no-text btn-sm font-icon-plus btn btn-primary"></button>
+          </td>
         </tr>
       </template>
-
-      <template x-if="!!newEntry">
+      <template x-for="entry in glossaryEntriesForTable">
         <tr>
           <template x-for="locale in locales">
             <td>
-              <input type="text" :name="`new[${locale.Lang}]`" x-model="newEntry[`${locale.Lang}`]">
+              <input type="text" :disabled="isLoading" x-model="entry[`${locale.Lang}`]" :value="entry[`${locale.Lang}`]">
             </td>
           </template>
-          <td>
-            <button @click="createNewEntry" class="btn">+</button>
+          <td class="grid-field__col-compact action-menu">
+            <button type="button" @click="removeEntry(entry.id)" :disabled="isLoading" class="btn btn--no-text btn-sm font-icon-minus-circle btn btn-secondary"></button>
           </td>
         </tr>
       </template>

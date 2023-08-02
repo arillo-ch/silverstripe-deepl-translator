@@ -6,6 +6,11 @@ use SilverStripe\ORM\DB;
 use SilverStripe\ORM\DataObject;
 use TractorCow\Fluent\Model\Locale;
 
+/**
+ * @property string $GlossaryId
+ * @property string $SourceLang
+ * @property string $TargetLang
+ */
 class Glossary extends DataObject
 {
     private static $table_name = 'Arillo_Deepl_Glossary';
@@ -21,6 +26,21 @@ class Glossary extends DataObject
     //     'Locale' => Locale::class,
     // ];
 
+    public static function find_or_create($source, $target): Glossary
+    {
+        if ($existing = self::by_source_and_target($source, $target)) {
+            return $existing;
+        }
+        $g = new Glossary();
+        $g->update([
+            'SourceLang' => $source,
+            'TargetLang' => $target,
+        ]);
+
+        $g->write();
+        return $g;
+    }
+
     public static function by_source_and_target($source, $target): ?Glossary
     {
         if (
@@ -34,6 +54,16 @@ class Glossary extends DataObject
         }
 
         return null;
+    }
+
+    public function forJson()
+    {
+        return [
+            'ID' => $this->ID,
+            'GlossaryId' => $this->GlossaryId,
+            'SourceLang' => $this->SourceLang,
+            'TargetLang' => $this->TargetLang,
+        ];
     }
 
     public function requireDefaultRecords()
