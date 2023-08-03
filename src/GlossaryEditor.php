@@ -17,25 +17,32 @@ class GlossaryEditor extends LiteralField
         parent::__construct(
             $name,
             (new ArrayData([
-                'GlossaryConfig' => json_encode([
-                    'apiBase' => ApiController::singleton()->Link(),
-                    'locales' => array_map(
-                        function ($l) {
-                            return [
-                                'ID' => $l->ID,
-                                'Locale' => $l->Locale,
-                                'Lang' => Deepl::language_from_locale(
-                                    $l->Locale
-                                ),
-                                'IsGlobalDefault' => $l->IsGlobalDefault,
-                            ];
-                        },
-                        Locale::get()
-                            ->sort('IsGlobalDefault DESC')
-                            ->toArray()
-                    ),
-                ]),
+                'GlossaryConfig' => json_encode(self::glossary_config()),
             ]))->renderWith('Arillo\Deepl\Includes\Glossary')
         );
+    }
+
+    public static function glossary_config()
+    {
+        return [
+            'apiBase' => ApiController::singleton()->Link(),
+            'locales' => array_map(
+                function ($l) {
+                    return [
+                        'ID' => $l->ID,
+                        'Locale' => $l->Locale,
+                        'Lang' => Deepl::language_from_locale($l->Locale),
+                        'IsGlobalDefault' => $l->IsGlobalDefault,
+                    ];
+                },
+                Locale::get()
+                    ->sort('IsGlobalDefault DESC')
+                    ->toArray()
+            ),
+            'isDirtMessage' => _t(
+                __CLASS__ . '.IsDirtMessage',
+                'Es gibt ungespeicherte Änderungen am Glossar. Seite dennoch verlassen?'
+            ),
+        ];
     }
 }

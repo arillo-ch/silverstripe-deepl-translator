@@ -15,3 +15,9 @@ de:
   Arillo\Deepl\DeeplCMSMainExtension:
     TranslationSuccess: 'Die Seite wurde aus {locale} übersetzt'
     TranslationError: 'Die Seite konnte nicht übersetzt werden'
+
+  Arillo\Deepl\GlossaryEditor:
+    Save: 'Glossar speichern'
+    Search: 'In Glossar suchen...'
+    NewEntry: 'Neuer Eintrag...'
+    IsDirtMessage: 'Es gibt ungespeicherte Änderungen am Glossar. Seite dennoch verlassen?'

@@ -53,3 +53,20 @@
     margin: 1px;
     padding: 7px 0 7px 10px;
 }
+
+.deeplGlossary input {
+    width: 100%;
+    height: calc(1.5384em + 1.077rem + 2px);
+}
+
+.deeplGlossary__table td:not(.grid-field__col-compact) {
+    min-height: 63.125px;
+}
+
+.deeplGlossary__table tr.added-entry {
+    background: #EFE;
+}
+
+.deeplGlossary__table tr.new-entry {
+    background-color: rgb(233, 240, 244);
+}

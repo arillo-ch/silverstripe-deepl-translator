@@ -4,6 +4,20 @@ en:
     RevertTo: 'Revert to "{lang}"'
     TranslateFrom: Translate from {locale}
     USE_DEEPL: 'Can user use deepl in CMS'
+
   Arillo\Deepl\DeeplUsageField:
     Title: 'Deepl usage'
     Of: 'of'
+
+  Arillo\Deepl\DeeplAdminTrait:
+    deepl_translate_from: 'Translate from {locale} via Deepl'
+
+  Arillo\Deepl\DeeplCMSMainExtension:
+    TranslationSuccess: 'Translated from {locale}'
+    TranslationError: 'Translation failed'
+
+  Arillo\Deepl\GlossaryEditor:
+    Save: 'Save glossary'
+    Search: 'Search in glossary...'
+    NewEntry: 'New entry...'
+    IsDirtMessage: 'You have unsaved changes in your glossary. Leave anyway?'

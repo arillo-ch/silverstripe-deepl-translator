@@ -77,9 +77,9 @@ class ApiController extends Controller
 
     public function glossaryEntries(HTTPRequest $request)
     {
-        // if (!Permission::check(Deepl::USE_DEEPL)) {
-        //     return $this->respondUnauthorized();
-        // }
+        if (!Permission::check(Deepl::USE_DEEPL)) {
+            return $this->respondUnauthorized();
+        }
 
         return $this->response
             ->addHeader('Content-Type', 'application/json')
@@ -92,8 +92,14 @@ class ApiController extends Controller
     {
         $acc = new ArrayList();
 
+        $defaultLocale = Locale::getDefault();
+        $sourceLang = Deepl::language_from_locale($defaultLocale->Locale);
+
         Glossary::get()
-            ->filter(['GlossaryId:not' => [null, '']])
+            ->filter([
+                'GlossaryId:not' => [null, ''],
+                'SourceLang' => $sourceLang,
+            ])
             ->each(function (Glossary $glossary) use ($acc) {
                 try {
                     $entries = Deepl::get_glossary_entries(
@@ -139,38 +145,45 @@ class ApiController extends Controller
             $sourceLang = Deepl::language_from_locale($defaultLocale->Locale);
             $now = DBDatetime::now()->format(DBDatetime::ISO_DATETIME);
 
-            foreach ($locales as $locale) {
-                if ($locale->ID !== $defaultLocale->ID) {
-                    $targetLang = Deepl::language_from_locale($locale->Locale);
-                    $entries = [];
-                    foreach ($glossaryEntries as $glossaryEntry) {
-                        if (
-                            isset($glossaryEntry[$sourceLang]) &&
-                            isset($glossaryEntry[$targetLang])
-                        ) {
-                            $entries[trim($glossaryEntry[$sourceLang])] = trim(
-                                $glossaryEntry[$targetLang]
-                            );
+            foreach ($locales as $sourceLocale) {
+                foreach ($locales as $targetLocale) {
+                    if ($sourceLocale->ID != $targetLocale->ID) {
+                        $sourceLang = Deepl::language_from_locale(
+                            $sourceLocale->Locale
+                        );
+                        $targetLang = Deepl::language_from_locale(
+                            $targetLocale->Locale
+                        );
+                        $entries = [];
+                        foreach ($glossaryEntries as $glossaryEntry) {
+                            if (
+                                isset($glossaryEntry[$sourceLang]) &&
+                                isset($glossaryEntry[$targetLang])
+                            ) {
+                                $entries[
+                                    trim($glossaryEntry[$sourceLang])
+                                ] = trim($glossaryEntry[$targetLang]);
+                            }
                         }
+
+                        $deeplGlossary = Deepl::create_glossary(
+                            "{$sourceLang} - {$targetLang} ({$now})",
+                            $sourceLang,
+                            $targetLang,
+                            $entries
+                        );
+
+                        $glossary = Glossary::find_or_create(
+                            $sourceLang,
+                            $targetLang
+                        );
+
+                        $glossary
+                            ->update([
+                                'GlossaryId' => $deeplGlossary->glossaryId,
+                            ])
+                            ->write();
                     }
-
-                    $deeplGlossary = Deepl::create_glossary(
-                        "{$sourceLang} - {$targetLang} ({$now})",
-                        $sourceLang,
-                        $targetLang,
-                        $entries
-                    );
-
-                    $glossary = Glossary::find_or_create(
-                        $sourceLang,
-                        $targetLang
-                    );
-
-                    $glossary
-                        ->update([
-                            'GlossaryId' => $deeplGlossary->glossaryId,
-                        ])
-                        ->write();
                 }
             }
 

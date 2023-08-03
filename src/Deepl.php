@@ -66,8 +66,20 @@ class Deepl implements PermissionProvider
             return null;
         }
 
+        $glossaryId = null;
+        if (
+            ($glossary = Glossary::by_source_and_target(
+                $fromLanguage,
+                $toLanguage
+            )) &&
+            $glossary->GlossaryId
+        ) {
+            $glossaryId = $glossary->GlossaryId;
+        }
+
         return $translator->translateText($text, $fromLanguage, $toLanguage, [
             'tag_handling' => 'html',
+            'glossary' => $glossaryId,
         ]);
     }
 

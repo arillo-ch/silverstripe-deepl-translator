@@ -1,5 +1,13 @@
 const EMPTY_STRING = '';
 
+let isDirtMessage =
+  'Es gibt ungespeicherte Änderungen am Glossar. Seite dennoch verlassen?';
+
+const beforeUnload = (e) => {
+  e.preventDefault();
+  return (e.returnValue = isDirtMessage);
+};
+
 export default (config) => ({
   ...config,
   newEntry: null,
@@ -7,13 +15,31 @@ export default (config) => ({
   glossaryEntriesForTable: [],
   search: EMPTY_STRING,
   isLoading: true,
+  isFirstLoad: true,
   sorter: {
     field: null,
     dir: 'ASC',
   },
+  isDirty: false,
 
   init() {
-    this.$watch('glossaryEntries', () => this.computeGlossaryEntriesForTable());
+    isDirtMessage = this.isDirtMessage || isDirtMessage;
+    this.$watch('glossaryEntries', () => {
+      this.computeGlossaryEntriesForTable();
+      this.$nextTick(() => {
+        if (!this.isFirstLoad) {
+          this.isDirty = true;
+        }
+      });
+    });
+    this.$watch('isDirty', (value) => {
+      if (value) {
+        window.addEventListener('beforeunload', beforeUnload);
+      } else {
+        console.log('remove beforeunload');
+        window.removeEventListener('beforeunload', beforeUnload);
+      }
+    });
     this.$watch('sorter', () => this.computeGlossaryEntriesForTable());
     this.$watch('search', () => this.computeGlossaryEntriesForTable());
     this.fetchGlossaryEntries();
@@ -39,6 +65,7 @@ export default (config) => ({
         this.prepareGlossaryEntries(data);
         this.setupNewEntry();
         this.isLoading = false;
+        setTimeout(() => (this.isFirstLoad = false), 100);
       })
       .catch((error) => {
         console.error(error);
@@ -46,7 +73,11 @@ export default (config) => ({
   },
 
   prepareGlossaryEntries(data) {
-    this.glossaryEntries = data.map((e, idx) => ({ ...e, id: idx }));
+    this.glossaryEntries = data.map((e) => ({
+      ...e,
+      id: this.generateId(),
+      isNew: false,
+    }));
   },
 
   setupNewEntry() {
@@ -59,9 +90,33 @@ export default (config) => ({
   },
 
   createNewEntry() {
-    const entry = { ...this.newEntry, id: this.glossaryEntries.length };
+    const entry = { ...this.newEntry, id: this.generateId(), isNew: true };
     this.glossaryEntries.push(entry);
     this.setupNewEntry();
+  },
+
+  isNewEntryValid() {
+    return Object.keys(this.newEntry).reduce((acc, lng) => {
+      if (acc && this.newEntry[lng] === EMPTY_STRING) {
+        return false;
+      }
+      return acc;
+    }, true);
+  },
+
+  generateId() {
+    if (typeof crypto === 'undefined') {
+      return 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.replace(
+        /[xy]/g,
+        function (c) {
+          var r = (Math.random() * 16) | 0,
+            v = c == 'x' ? r : (r & 0x3) | 0x8;
+          return v.toString(16);
+        }
+      );
+    } else {
+      return crypto.randomUUID();
+    }
   },
 
   computeGlossaryEntriesForTable() {
@@ -122,6 +177,7 @@ export default (config) => ({
 
         this.prepareGlossaryEntries(data);
         this.setupNewEntry();
+        this.isDirty = false;
       })
       .catch((error) => {
         console.error(error);
