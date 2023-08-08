@@ -68,7 +68,7 @@ export default (config) => ({
         setTimeout(() => (this.isFirstLoad = false), 100);
       })
       .catch((error) => {
-        alert(error);
+        alert(error.message || error);
       });
   },
 
@@ -177,7 +177,7 @@ export default (config) => ({
         this.isDirty = false;
       })
       .catch((error) => {
-        console.error(error);
+        alert(error.message || error);
       })
       .finally(() => (this.isLoading = false));
   },
