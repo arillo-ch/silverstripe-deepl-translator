@@ -106,14 +106,11 @@ export default (config) => ({
 
   generateId() {
     if (typeof crypto === 'undefined') {
-      return 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.replace(
-        /[xy]/g,
-        function (c) {
-          var r = (Math.random() * 16) | 0,
-            v = c == 'x' ? r : (r & 0x3) | 0x8;
-          return v.toString(16);
-        }
-      );
+      return 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = (Math.random() * 16) | 0;
+        const v = c == 'x' ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      });
     } else {
       return crypto.randomUUID();
     }
@@ -175,7 +172,7 @@ export default (config) => ({
           return Promise.reject(error);
         }
 
-        this.prepareGlossaryEntries(data);
+        this.prepareGlossaryEntries(data.glossaryEntries);
         this.setupNewEntry();
         this.isDirty = false;
       })
