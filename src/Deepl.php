@@ -35,6 +35,11 @@ class Deepl implements PermissionProvider
         return Environment::getEnv('DEEPL_APIKEY');
     }
 
+    public static function get_glossary_name_prefix()
+    {
+        return Environment::getEnv('DEEPL_GLOSSARY_NAME_PREFIX');
+    }
+
     public static function create_translator(): ?Translator
     {
         $apiKey = Environment::getEnv('DEEPL_APIKEY');
@@ -136,8 +141,9 @@ class Deepl implements PermissionProvider
         return $translator->getGlossaryEntries($id);
     }
 
-    public static function delete_unused_glossaries()
-    {
+    public static function delete_unused_glossaries(
+        $excludeWhereNameStartsWith = null
+    ) {
         $translator = self::create_translator();
 
         if (!$translator) {
@@ -148,7 +154,15 @@ class Deepl implements PermissionProvider
         $glossaries = $translator->listGlossaries();
 
         foreach ($glossaries as $glossary) {
-            if (!in_array($glossary->glossaryId, $activeGlossariesIds)) {
+            if (
+                !in_array($glossary->glossaryId, $activeGlossariesIds) &&
+                (!!$excludeWhereNameStartsWith &&
+                    strncmp(
+                        $glossary->name,
+                        $excludeWhereNameStartsWith,
+                        strlen($excludeWhereNameStartsWith)
+                    ) === 0)
+            ) {
                 $translator->deleteGlossary($glossary);
             }
         }

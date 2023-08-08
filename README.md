@@ -17,6 +17,14 @@ Create a Deepl API key and add it to your `.env`:
 DEEPL_APIKEY="<YOUR_DEEPL_APIKEY>"
 ```
 
+If you are using the glossary feature, it is necessary, to set a unique name prefix in your `.env`.
+It will prevent old glossaries from deletion if their names do not start with that name prefix.
+This is handy if you are using the same API key in multiple instances (e.g. dev & prod).
+
+```
+DEEPL_GLOSSARY_NAME_PREFIX="myky-dev"
+```
+
 Configure your DataObjects to display the Deepl translation handles.
 
 **NOTE:** It is important, that this configurations happens **AFTER** fluent was added to these DataObjects. Otherwise the UI will not appear.

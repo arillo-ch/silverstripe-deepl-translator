@@ -131,6 +131,12 @@ class ApiController extends Controller
         if (!Permission::check(Deepl::USE_DEEPL)) {
             return $this->respondUnauthorized();
         }
+        $namePrefix = Deepl::get_glossary_name_prefix();
+        if (null == $namePrefix) {
+            return $this->respondWithJson([
+                'message' => 'env DEEPL_GLOSSARY_NAME_PREFIX not set',
+            ])->setStatusCode(400);
+        }
 
         if (
             null != $request->postVar('glossaryEntries') &&
@@ -167,7 +173,7 @@ class ApiController extends Controller
                         }
 
                         $deeplGlossary = Deepl::create_glossary(
-                            "{$sourceLang} - {$targetLang} ({$now})",
+                            "{$namePrefix}: {$sourceLang} - {$targetLang} ({$now})",
                             $sourceLang,
                             $targetLang,
                             $entries
@@ -187,21 +193,24 @@ class ApiController extends Controller
                 }
             }
 
-            Deepl::delete_unused_glossaries();
+            Deepl::delete_unused_glossaries($namePrefix);
 
-            return $this->response
-                ->addHeader('Content-Type', 'application/json')
-                ->setBody(
-                    json_encode([
-                        'glossaryEntries' => $this->accumulateGlossaries()->toNestedArray(),
-                    ])
-                );
+            return $this->respondWithJson([
+                'glossaryEntries' => $this->accumulateGlossaries()->toNestedArray(),
+            ]);
         }
 
         return $this->resondErrorMessage('insufficiant arguments');
     }
 
-    public function respondUnauthorized()
+    protected function respondWithJson($data)
+    {
+        return $this->response
+            ->addHeader('Content-Type', 'application/json')
+            ->setBody(json_encode($data));
+    }
+
+    protected function respondUnauthorized()
     {
         return $this->response
             ->setStatusCode(401)

@@ -68,7 +68,7 @@ export default (config) => ({
         setTimeout(() => (this.isFirstLoad = false), 100);
       })
       .catch((error) => {
-        console.error(error);
+        alert(error);
       });
   },
 
