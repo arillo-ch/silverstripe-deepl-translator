@@ -93,10 +93,8 @@ However, it is possible to specify an alternate data source by implementing a cl
 
 ## DataObject-wise translator
 
-@todo description
-
-- automatically translates all translatable fields of a DataObject
-- define relations that also will be translated
+Automatically translates all translatable fields of a DataObject.
+Just add `Arillo\Deepl\DataObjectWiseTranslationExtension` to extensions of that DataObject class, e.g.:
 
 ```
 ---
@@ -114,13 +112,39 @@ Arillo\Elements\ElementBase:
     - Arillo\Deepl\DataObjectWiseTranslationExtension
 ```
 
+Optionally you can define relations that also will be translated. Make sure that the according DataObject also use soem Fluent extensions.
 
+To configure the wanted relations just use the `deepl_dataobject_included_relations` configuration, e.g.:
+
+```
+Arillo\Elements\ElementBase:
+  extensions:
+    - Arillo\Deepl\DataObjectWiseTranslationExtension
+  deepl_dataobject_included_relations:
+    - Elements
+    - LinkObject
+```
+
+## Glossary
+
+If you want to use the glossary features of Deepl, you can edit your glossaries in SiteConfig.
+
+You need to set a glossary name prefix in your `.env`, like so:
+
+```
+DEEPL_GLOSSARY_NAME_PREFIX="mysite-prod"
+```
+
+These prefixes are usefull if you run your app in different environments, e.g.: `dev` or `live`.
+
+As of this writing, keep in mind that the deepl glossary API does not allow for updates of glossaries. So updates are deletes and creates. The purging mechanism takes the name prefixes into account. E.g.:
+If your env is set to `mysite-prod` it will only delete glossaries where the name starts with that prefix. This should help to prevent unwanted glossary deletes.
 
 
 ## CMS
 
 In CMS you have to add `USE_DEEPL` permission to non-admin groups.
 
-## Thanks
+## Alternatives
 
-This module is inspired by: [bratiask/silverstripe-autotranslate](https://github.com/bratiask/silverstripe-autotranslate)
+If you want to use Google Translate consider to use: [bratiask/silverstripe-autotranslate](https://github.com/bratiask/silverstripe-autotranslate)
