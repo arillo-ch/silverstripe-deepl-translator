@@ -177,7 +177,7 @@ class Deepl implements PermissionProvider
             isset($parsed['language']) &&
             $parsed['language'] == 'en'
         ) {
-            return $parsed['language'] . '-' . $parsed['region'];
+            return $parsed['language'] . '-' . $parsed['region'] == 'GB' ? 'GB' : 'US' ;
         }
         
         if ($parsed && isset($parsed['language'])) {
