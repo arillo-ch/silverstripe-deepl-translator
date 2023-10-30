@@ -171,6 +171,15 @@ class Deepl implements PermissionProvider
     public static function language_from_locale(?string $locale = null): ?string
     {
         $parsed = locale_parse($locale);
+
+        if (
+            $parsed &&
+            isset($parsed['language']) &&
+            $parsed['language'] == 'en'
+        ) {
+            return $parsed['language'] . '-' . $parsed['region'] == 'GB' ? 'GB' : 'US' ;
+        }
+        
         if ($parsed && isset($parsed['language'])) {
             return $parsed['language'];
         }
