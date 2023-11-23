@@ -132,6 +132,9 @@ class FieldWiseTranslationExtension extends DataExtension
 
     private function forAttr($value)
     {
+        if (!$value) {
+            return $value;
+        }
         return str_replace(["\r\n", "\r", "\n"], '', $value);
     }
 
