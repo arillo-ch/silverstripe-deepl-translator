@@ -6,7 +6,6 @@ use SilverStripe\Forms\TabSet;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
 use TractorCow\Fluent\Model\Locale;
-use SilverStripe\Control\Controller;
 use SilverStripe\Security\Permission;
 use TractorCow\Fluent\State\FluentState;
 
@@ -18,6 +17,7 @@ trait DeeplAdminTrait
         bool $forceMenu = false
     ) {
         if (
+            !$record->hasExtension(DataObjectWiseTranslationExtension::class) ||
             !FluentState::singleton()->getLocale() ||
             !Permission::check(Deepl::USE_DEEPL)
         ) {
