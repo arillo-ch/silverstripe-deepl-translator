@@ -91,6 +91,19 @@ However, it is possible to specify an alternate data source by implementing a cl
     }
 ```
 
+## Add translation features to selected fields only:
+
+Below you  see an example configuration that will only add field-wiese translation features to `Title` and `Description` for that `App\Model\MyDataObject`.
+
+```
+App\Model\MyDataObject:
+  extensions:
+    - Arillo\Deepl\FieldWiseTranslationExtension
+  deepl_fieldwise_included_fields:
+    - Title
+    - Description
+```
+
 ## DataObject-wise translator
 
 Automatically translates all translatable fields of a DataObject.
