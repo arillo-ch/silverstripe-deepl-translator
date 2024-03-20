@@ -24,6 +24,7 @@ class FieldWiseTranslationExtension extends DataExtension
 
     private static $targetLocale;
     private static $deepl_fieldwise_included_fields = [];
+    private static $deepl_fieldwise_translate_urlsegment_field = false;
 
     public function updateCMSFields(FieldList $fields): void
     {
@@ -160,7 +161,9 @@ class FieldWiseTranslationExtension extends DataExtension
                 self::TRANSLATABLE_FIELD_SCHEMA_DATA_TYPES
             ) &&
             false === $field->isReadOnly() &&
-            'URLSegment' !== $field->getName();
+            ('URLSegment' !== $field->getName() ||
+                $this->owner->config()
+                    ->deepl_fieldwise_translate_urlsegment_field);
     }
 
     private function currentLocale(): string

@@ -67,6 +67,13 @@ Arillo\Elements\ElementBase:
     - Arillo\Deepl\FieldWiseTranslationExtension
 ```
 
+Make URLSegmentFields translatable (CAUTION: is expirimental; JS implementation WIP):
+
+```
+Arillo\Deepl\FieldWiseTranslationExtension:
+  deepl_fieldwise_translate_urlsegment_field: true
+```
+
 ## Alternate field value gathering for field-wise translator
 
 To preload current values for field-wise translations this module uses the following method `$record->{$fieldName}`.
