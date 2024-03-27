@@ -138,6 +138,17 @@ function DeeplField($) {
           // tinymce.get(textarea.attr('id')).load();
         }
       } else {
+        if (value && input.hasClass('urlsegment')) {
+          var preview = input.closest('.form__field-holder').find('a.URL-link');
+          var oldValue = input.val();
+          var oldPreviewText = preview.html();
+
+          if (preview.length > 0 && oldValue && oldPreviewText) {
+            preview.html(
+              oldPreviewText.replace(oldValue, value.replace(' ', '-'))
+            );
+          }
+        }
         input.val(value);
       }
     },
