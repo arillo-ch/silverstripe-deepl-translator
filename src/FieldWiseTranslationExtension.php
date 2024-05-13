@@ -74,7 +74,7 @@ class FieldWiseTranslationExtension extends DataExtension
                         $targetLanguage
                     ) {
                         $language = Deepl::language_from_locale(
-                            $r->Locale->Locale
+                            $r->Locale->Locale, true
                         );
 
                         $currentValues->push(

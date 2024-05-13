@@ -83,7 +83,7 @@ class DataObjectWiseTranslationExtension extends DataExtension
             $result = self::get_translator_class()::run(
                 $recordsCollection,
                 Deepl::language_from_locale($toLocale),
-                Deepl::language_from_locale($fromLocale)
+                Deepl::language_from_locale($fromLocale, true)
             );
 
             return $result;
@@ -153,7 +153,7 @@ class DataObjectWiseTranslationExtension extends DataExtension
             $result = ParallelTranslator::run(
                 $recordsCollection,
                 Deepl::language_from_locale($toLocale),
-                Deepl::language_from_locale($fromLocale)
+                Deepl::language_from_locale($fromLocale, true)
             );
 
             return $result;
