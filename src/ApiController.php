@@ -36,7 +36,7 @@ class ApiController extends Controller
             $request->postVar('toLocale')
         );
         $fromLanguage = Deepl::language_from_locale(
-            $request->postVar('fromLocale')
+            $request->postVar('fromLocale'), true
         );
         $text = $request->postVar('text');
 
@@ -93,7 +93,7 @@ class ApiController extends Controller
         $acc = new ArrayList();
 
         $defaultLocale = Locale::getDefault();
-        $sourceLang = Deepl::language_from_locale($defaultLocale->Locale);
+        $sourceLang = Deepl::language_from_locale($defaultLocale->Locale, true);
 
         Glossary::get()
             ->filter([
@@ -148,14 +148,14 @@ class ApiController extends Controller
         ) {
             $locales = Locale::get()->sort('IsGlobalDefault DESC');
             $defaultLocale = $locales->find('IsGlobalDefault', true);
-            $sourceLang = Deepl::language_from_locale($defaultLocale->Locale);
+            $sourceLang = Deepl::language_from_locale($defaultLocale->Locale, true);
             $now = DBDatetime::now()->format(DBDatetime::ISO_DATETIME);
 
             foreach ($locales as $sourceLocale) {
                 foreach ($locales as $targetLocale) {
                     if ($sourceLocale->ID != $targetLocale->ID) {
                         $sourceLang = Deepl::language_from_locale(
-                            $sourceLocale->Locale
+                            $sourceLocale->Locale, true
                         );
                         $targetLang = Deepl::language_from_locale(
                             $targetLocale->Locale
