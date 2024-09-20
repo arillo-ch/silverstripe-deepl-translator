@@ -147,7 +147,7 @@ class FieldWiseTranslationExtension extends DataExtension
         FormField $field
     ): bool {
         $include = $this->owner->config()->deepl_fieldwise_included_fields;
-        if (!$inckude || !count($include)) {
+        if (!$include || !count($include)) {
             return true;
         }
         return in_array($field->getName(), $include);
