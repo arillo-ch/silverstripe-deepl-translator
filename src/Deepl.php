@@ -181,18 +181,7 @@ class Deepl implements PermissionProvider
                 return $parsed['language'];
             }
 
-            return $parsed['language'] . '-' . $parsed['region'] == 'GB' ? 'GB' : 'US';
-        }
-
-        // When target should be english, force en-GB or en-GB
-        // (see: https://developers.deepl.com/docs/resources/supported-languages#target-languages)
-        if (
-            !$source &&
-            $parsed &&
-            isset($parsed['language']) &&
-            ($parsed['language'] == 'US' || $parsed['language'] == 'GB')
-        ) {
-            return 'en-' . $parsed['language'];
+            return $parsed['language'] . '-' . ($parsed['region'] == 'GB' ? 'GB' : 'US');
         }
         
         if ($parsed && isset($parsed['language'])) {
