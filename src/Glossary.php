@@ -76,12 +76,12 @@ class Glossary extends DataObject
             $locales->each(function ($locale) use ($defaultLocale) {
                 if ($locale->ID != $defaultLocale->ID) {
                     $source = Deepl::language_from_locale(
-                        $defaultLocale->Locale
+                        $defaultLocale->Locale, true
                     );
                     $target = Deepl::language_from_locale($locale->Locale);
                     if (
                         !self::by_source_and_target(
-                            Deepl::language_from_locale($defaultLocale->Locale),
+                            Deepl::language_from_locale($defaultLocale->Locale, true),
                             Deepl::language_from_locale($locale->Locale)
                         )
                     ) {
