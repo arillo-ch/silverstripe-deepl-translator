@@ -23,6 +23,8 @@ class FieldWiseTranslationExtension extends DataExtension
     ];
 
     private static $targetLocale;
+    private static $deepl_fieldwise_included_fields = [];
+    private static $deepl_fieldwise_translate_urlsegment_field = false;
 
     public function updateCMSFields(FieldList $fields): void
     {
@@ -60,7 +62,10 @@ class FieldWiseTranslationExtension extends DataExtension
             });
 
             foreach ($fields->dataFields() as $field) {
-                if ($this->isFieldAutotranslatable($field)) {
+                if (
+                    $this->isFieldAutotranslatable($field) &&
+                    $this->isFieldConfiguratedAsAutotranslatable($field)
+                ) {
                     $currentValues = new ArrayList();
 
                     $localized->each(function ($r) use (
@@ -132,7 +137,20 @@ class FieldWiseTranslationExtension extends DataExtension
 
     private function forAttr($value)
     {
+        if (!$value) {
+            return $value;
+        }
         return str_replace(["\r\n", "\r", "\n"], '', $value);
+    }
+
+    private function isFieldConfiguratedAsAutotranslatable(
+        FormField $field
+    ): bool {
+        $include = $this->owner->config()->deepl_fieldwise_included_fields;
+        if (!$inckude || !count($include)) {
+            return true;
+        }
+        return in_array($field->getName(), $include);
     }
 
     private function isFieldAutotranslatable(FormField $field): bool
@@ -143,7 +161,9 @@ class FieldWiseTranslationExtension extends DataExtension
                 self::TRANSLATABLE_FIELD_SCHEMA_DATA_TYPES
             ) &&
             false === $field->isReadOnly() &&
-            'URLSegment' !== $field->getName();
+            ('URLSegment' !== $field->getName() ||
+                $this->owner->config()
+                    ->deepl_fieldwise_translate_urlsegment_field);
     }
 
     private function currentLocale(): string

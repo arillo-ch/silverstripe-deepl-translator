@@ -67,6 +67,13 @@ Arillo\Elements\ElementBase:
     - Arillo\Deepl\FieldWiseTranslationExtension
 ```
 
+Make URLSegmentFields translatable (CAUTION: is expirimental; JS implementation WIP):
+
+```
+Arillo\Deepl\FieldWiseTranslationExtension:
+  deepl_fieldwise_translate_urlsegment_field: true
+```
+
 ## Alternate field value gathering for field-wise translator
 
 To preload current values for field-wise translations this module uses the following method `$record->{$fieldName}`.
@@ -89,6 +96,19 @@ However, it is possible to specify an alternate data source by implementing a cl
                 return $this->{$fieldName};
         }
     }
+```
+
+## Add translation features to selected fields only:
+
+Below you  see an example configuration that will only add field-wiese translation features to `Title` and `Description` for that `App\Model\MyDataObject`.
+
+```
+App\Model\MyDataObject:
+  extensions:
+    - Arillo\Deepl\FieldWiseTranslationExtension
+  deepl_fieldwise_included_fields:
+    - Title
+    - Description
 ```
 
 ## DataObject-wise translator
