@@ -189,6 +189,10 @@ export default (config) => ({
   apiUrl(append = null) {
     if (!append) return this.apiBase;
 
-    return `${this.apiBase}${append}`;
+    const baseUrl = this.apiBase.endsWith('/')
+      ? this.apiBase
+      : `${this.apiBase}/`;
+
+    return `${baseUrl}${append}`;
   },
 });
