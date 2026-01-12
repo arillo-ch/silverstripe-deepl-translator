@@ -1,72 +1,72 @@
 .deepl {
-    display: inline-block;
-    padding: 0;
-    border: none;
-    background-color: transparent;
-    color: #43536d;
-    outline: none;
-    cursor: pointer;
+  display: inline-block;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  color: #43536d;
+  outline: none;
+  cursor: pointer;
 }
 
 .deepl .font-icon-translatable {
-    pointer-events: none;
+  pointer-events: none;
 }
 
 .deepl .caret {
-    margin-left: 5px;
-    pointer-events: none;
+  margin-left: 5px;
+  pointer-events: none;
 }
 
 .deepl ul {
-    display: none;
-    position: absolute;
-    z-index: 1;
-    background-color: #e9f0f4;
-    border: 1px solid #e7ebf0;
-    border-radius: 2px;
-    list-style: none;
-    margin-top: 5px;
-    padding: 0;
-    width: 240px;
+  display: none;
+  position: absolute;
+  z-index: 999;
+  background-color: #e9f0f4;
+  border: 1px solid #e7ebf0;
+  border-radius: 2px;
+  list-style: none;
+  margin-top: 5px;
+  padding: 0;
+  width: 240px;
 }
 
 .deepl ul li {
-    padding: 5px 10px;
+  padding: 5px 10px;
 }
 
 .deepl ul li:hover {
-    background-color: #d8e4eb;
+  background-color: #d8e4eb;
 }
 
 .form__field-holder .translate-in-progress {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 20px;
-    right: 20px;
-    background-color: #ffffffaa;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 20px;
+  right: 20px;
+  background-color: #ffffffaa;
 }
 
 .form__field-holder .translate-in-progress span {
-    display: inline-block;
-    background-color: #ffffff99;
-    margin: 1px;
-    padding: 7px 0 7px 10px;
+  display: inline-block;
+  background-color: #ffffff99;
+  margin: 1px;
+  padding: 7px 0 7px 10px;
 }
 
 .deeplGlossary input {
-    width: 100%;
-    height: calc(1.5384em + 1.077rem + 2px);
+  width: 100%;
+  height: calc(1.5384em + 1.077rem + 2px);
 }
 
 .deeplGlossary__table td:not(.grid-field__col-compact) {
-    min-height: 63.125px;
+  min-height: 63.125px;
 }
 
 .deeplGlossary__table tr.added-entry {
-    background: #EFE;
+  background: #efe;
 }
 
 .deeplGlossary__table tr.new-entry {
-    background-color: rgb(233, 240, 244);
+  background-color: rgb(233, 240, 244);
 }
