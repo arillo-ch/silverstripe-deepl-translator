@@ -23,11 +23,12 @@
   z-index: 999;
   background-color: #fafafa;
   border: 1px solid #e7ebf0;
-  border-radius: 2px;
+  border-radius: 6px;
   list-style: none;
   margin-top: 5px;
   padding: 0;
-  width: 240px;
+  max-width: 240px;
+  overflow: hidden;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
