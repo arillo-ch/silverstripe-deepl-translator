@@ -21,17 +21,26 @@
   display: none;
   position: absolute;
   z-index: 999;
-  background-color: #e9f0f4;
+  background-color: #fafafa;
   border: 1px solid #e7ebf0;
   border-radius: 2px;
   list-style: none;
   margin-top: 5px;
   padding: 0;
   width: 240px;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
 .deepl ul li {
   padding: 5px 10px;
+}
+
+.deepl ul li:first-child {
+  padding-top: 7px;
+}
+
+.deepl ul li:last-child {
+  padding-bottom: 7px;
 }
 
 .deepl ul li:hover {
