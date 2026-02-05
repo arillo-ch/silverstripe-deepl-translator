@@ -2,9 +2,9 @@
 namespace Arillo\Deepl;
 
 use SilverStripe\Forms\FieldList;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 
-class SiteConfig extends DataExtension
+class SiteConfig extends Extension
 {
     public function updateCMSFields(FieldList $fields)
     {

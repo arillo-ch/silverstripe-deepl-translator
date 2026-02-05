@@ -5,10 +5,10 @@ use PhpParser\Node\Expr\Cast\Array_;
 use TractorCow\Fluent\Model\Locale;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
-use SilverStripe\ORM\ArrayList;
+use SilverStripe\Model\List\ArrayList;
 use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\Security\Permission;
-use SilverStripe\View\ArrayData;
+use SilverStripe\Model\ArrayData;
 
 class ApiController extends Controller
 {

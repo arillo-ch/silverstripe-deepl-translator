@@ -1,6 +1,6 @@
 <?php
 namespace Arillo\Deepl;
-use SilverStripe\View\ArrayData;
+use SilverStripe\Model\ArrayData;
 use SilverStripe\View\Requirements;
 use TractorCow\Fluent\Model\Locale;
 use SilverStripe\Forms\LiteralField;

@@ -1,7 +1,7 @@
 <?php
 namespace Arillo\Deepl;
 
-use SilverStripe\ORM\ArrayList;
+use SilverStripe\Model\List\ArrayList;
 use function Amp\Promise\wait;
 use function Amp\ParallelFunctions\parallelMap;
 

@@ -1,18 +1,18 @@
 <?php
 namespace Arillo\Deepl;
 
-use SilverStripe\ORM\ArrayList;
+use SilverStripe\Model\List\ArrayList;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\View\ArrayData;
+use SilverStripe\Model\ArrayData;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormField;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use TractorCow\Fluent\Model\Locale;
 use SilverStripe\Security\Permission;
 use SilverStripe\ORM\FieldType\DBField;
 use TractorCow\Fluent\State\FluentState;
 
-class FieldWiseTranslationExtension extends DataExtension
+class FieldWiseTranslationExtension extends Extension
 {
     const FLUENT_LOCALISED_FIELD_CSS_CLASS = 'fluent__localised-field';
 

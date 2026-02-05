@@ -1,16 +1,16 @@
 <?php
 namespace Arillo\Deepl;
 
-use SilverStripe\ORM\ArrayList;
+use SilverStripe\Model\List\ArrayList;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\View\ArrayData;
+use SilverStripe\Model\ArrayData;
 use SilverStripe\Forms\FieldList;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Versioned\Versioned;
 use TractorCow\Fluent\State\FluentState;
 
-class DataObjectWiseTranslationExtension extends DataExtension
+class DataObjectWiseTranslationExtension extends Extension
 {
     use DeeplAdminTrait;
 

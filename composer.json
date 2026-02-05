@@ -19,10 +19,11 @@
         "issues": "https://github.com/arillo-ch/silverstripe-deepl-translator/issues"
     },
     "require": {
-        "tractorcow/silverstripe-fluent": "^5 || ^6 || ^7",
+        "silverstripe/framework": "^6",
+        "tractorcow/silverstripe-fluent": "^8",
         "deeplcom/deepl-php": "^1.3.0",
         "amphp/parallel-functions": "^1.1",
-        "arillo/silverstripe-cms-alpine": "dev-main"
+        "arillo/silverstripe-cms-alpine": "^2.0"
     },
     "autoload": {
         "psr-4": {

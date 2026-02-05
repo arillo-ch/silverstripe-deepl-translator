@@ -1,7 +1,7 @@
 <?php
 namespace Arillo\Deepl;
 
-use SilverStripe\ORM\ArrayList;
+use SilverStripe\Model\List\ArrayList;
 
 class SerialTranslator
 {
