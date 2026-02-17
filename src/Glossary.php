@@ -2,6 +2,9 @@
 
 namespace Arillo\Deepl;
 
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DB;
 use SilverStripe\ORM\DataObject;
 use TractorCow\Fluent\Model\Locale;
@@ -22,9 +25,26 @@ class Glossary extends DataObject
         'TargetLang' => 'Varchar(10)',
     ];
 
+    private static $summary_fields = ['SourceLang', 'TargetLang', 'GlossaryId'];
+
     // private static $has_one = [
     //     'Locale' => Locale::class,
     // ];
+
+    public function getCMSFields()
+    {
+        $fields = FieldList::create(
+            ReadonlyField::create('SourceLang', 'Source Language'),
+            ReadonlyField::create('TargetLang', 'Target Language'),
+            TextField::create('GlossaryId', 'Glossary ID')->setDescription(
+                'DeepL Glossary ID — manage glossaries at https://www.deepl.com/your-account/glossaries',
+            ),
+        );
+
+        $this->extend('updateCMSFields', $fields);
+
+        return $fields;
+    }
 
     public static function find_or_create($source, $target): Glossary
     {
@@ -76,13 +96,13 @@ class Glossary extends DataObject
             $locales->each(function ($locale) use ($defaultLocale) {
                 if ($locale->ID != $defaultLocale->ID) {
                     $source = Deepl::language_from_locale(
-                        $defaultLocale->Locale
+                        $defaultLocale->Locale,
                     );
                     $target = Deepl::language_from_locale($locale->Locale);
                     if (
                         !self::by_source_and_target(
                             Deepl::language_from_locale($defaultLocale->Locale),
-                            Deepl::language_from_locale($locale->Locale)
+                            Deepl::language_from_locale($locale->Locale),
                         )
                     ) {
                         $glossary = (new Glossary())->update([
@@ -93,7 +113,7 @@ class Glossary extends DataObject
 
                         DB::alteration_message(
                             "Gloassary created ({$glossary->SourceLang}, {$glossary->TargetLang}) ",
-                            'created'
+                            'created',
                         );
                     }
                 }
