@@ -2,6 +2,9 @@
 
 namespace Arillo\Deepl;
 
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\ORM\DB;
 use SilverStripe\ORM\DataObject;
 use TractorCow\Fluent\Model\Locale;
@@ -22,9 +25,61 @@ class Glossary extends DataObject
         'TargetLang' => 'Varchar(10)',
     ];
 
+    private static $summary_fields = ['SourceLang', 'TargetLang', 'GlossaryId'];
+
     // private static $has_one = [
     //     'Locale' => Locale::class,
     // ];
+
+    public function canCreate($member = null, $context = [])
+    {
+        return false;
+    }
+
+    public function canDelete($member = null)
+    {
+        $activeLangs = Locale::get()->map('ID', 'Locale')->toArray();
+        $activeLangs = array_map(
+            fn($l) => Deepl::language_from_locale($l),
+            $activeLangs,
+        );
+
+        return !in_array($this->SourceLang, $activeLangs) ||
+            !in_array($this->TargetLang, $activeLangs);
+    }
+
+    public function getCMSFields()
+    {
+        $source = [];
+
+        try {
+            $glossaries = Deepl::list_glossaries();
+            if ($glossaries) {
+                foreach ($glossaries as $g) {
+                    if (
+                        $g->sourceLang === $this->SourceLang &&
+                        $g->targetLang === $this->TargetLang
+                    ) {
+                        $source[$g->glossaryId] = $g->name;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            // API unavailable
+        }
+
+        $fields = FieldList::create(
+            ReadonlyField::create('SourceLang', 'Source Language'),
+            ReadonlyField::create('TargetLang', 'Target Language'),
+            DropdownField::create('GlossaryId', 'Glossary', $source)
+                ->setHasEmptyDefault(true)
+                ->setEmptyString('(none)'),
+        );
+
+        $this->extend('updateCMSFields', $fields);
+
+        return $fields;
+    }
 
     public static function find_or_create($source, $target): Glossary
     {
@@ -76,13 +131,13 @@ class Glossary extends DataObject
             $locales->each(function ($locale) use ($defaultLocale) {
                 if ($locale->ID != $defaultLocale->ID) {
                     $source = Deepl::language_from_locale(
-                        $defaultLocale->Locale
+                        $defaultLocale->Locale,
                     );
                     $target = Deepl::language_from_locale($locale->Locale);
                     if (
                         !self::by_source_and_target(
                             Deepl::language_from_locale($defaultLocale->Locale),
-                            Deepl::language_from_locale($locale->Locale)
+                            Deepl::language_from_locale($locale->Locale),
                         )
                     ) {
                         $glossary = (new Glossary())->update([
@@ -93,7 +148,7 @@ class Glossary extends DataObject
 
                         DB::alteration_message(
                             "Gloassary created ({$glossary->SourceLang}, {$glossary->TargetLang}) ",
-                            'created'
+                            'created',
                         );
                     }
                 }
