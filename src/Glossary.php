@@ -31,6 +31,23 @@ class Glossary extends DataObject
     //     'Locale' => Locale::class,
     // ];
 
+    public function canCreate($member = null, $context = [])
+    {
+        return false;
+    }
+
+    public function canDelete($member = null)
+    {
+        $activeLangs = Locale::get()->map('ID', 'Locale')->toArray();
+        $activeLangs = array_map(
+            fn($l) => Deepl::language_from_locale($l),
+            $activeLangs,
+        );
+
+        return !in_array($this->SourceLang, $activeLangs) ||
+            !in_array($this->TargetLang, $activeLangs);
+    }
+
     public function getCMSFields()
     {
         $fields = FieldList::create(

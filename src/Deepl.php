@@ -1,6 +1,7 @@
 <?php
 namespace Arillo\Deepl;
 
+use DeepL\DeepLClient;
 use DeepL\GlossaryEntries;
 use DeepL\TextResult;
 use DeepL\Translator;
@@ -20,7 +21,7 @@ class Deepl implements PermissionProvider
         return [
             self::USE_DEEPL => _t(
                 'Arillo\Deepl.USE_DEEPL',
-                'Can user use deepl in CMS'
+                'Can user use deepl in CMS',
             ),
         ];
     }
@@ -40,7 +41,7 @@ class Deepl implements PermissionProvider
         return Environment::getEnv('DEEPL_GLOSSARY_NAME_PREFIX');
     }
 
-    public static function create_translator(): ?Translator
+    public static function create_translator(): ?DeepLClient
     {
         $apiKey = Environment::getEnv('DEEPL_APIKEY');
 
@@ -48,7 +49,7 @@ class Deepl implements PermissionProvider
             return null;
         }
 
-        return new Translator($apiKey, [
+        return new DeepLClient($apiKey, [
             TranslatorOptions::TIMEOUT => self::$timeout,
             TranslatorOptions::MAX_RETRIES => self::$max_retries,
         ]);
@@ -63,7 +64,7 @@ class Deepl implements PermissionProvider
     public static function translate(
         $text,
         string $toLanguage,
-        ?string $fromLanguage = null
+        ?string $fromLanguage = null,
     ) {
         $translator = self::create_translator();
 
@@ -75,16 +76,25 @@ class Deepl implements PermissionProvider
         if (
             ($glossary = Glossary::by_source_and_target(
                 $fromLanguage,
-                $toLanguage
+                $toLanguage,
             )) &&
             $glossary->GlossaryId
         ) {
             $glossaryId = $glossary->GlossaryId;
         }
 
+        $styleId = null;
+        if (
+            ($styleRule = StyleRule::by_target($toLanguage)) &&
+            $styleRule->StyleId
+        ) {
+            $styleId = $styleRule->StyleId;
+        }
+
         return $translator->translateText($text, $fromLanguage, $toLanguage, [
             'tag_handling' => 'html',
             'glossary' => $glossaryId,
+            'style_id' => $styleId,
         ]);
     }
 
@@ -97,6 +107,17 @@ class Deepl implements PermissionProvider
         }
 
         return $translator->getUsage();
+    }
+
+    public static function list_style_rules()
+    {
+        $client = self::create_translator();
+
+        if (!$client) {
+            return null;
+        }
+
+        return $client->getAllStyleRules();
     }
 
     public static function list_glossaries()
@@ -114,7 +135,7 @@ class Deepl implements PermissionProvider
         $name,
         $sourceLang,
         $targetLang,
-        $entries
+        $entries,
     ) {
         $translator = self::create_translator();
 
@@ -126,7 +147,7 @@ class Deepl implements PermissionProvider
             $name,
             $sourceLang,
             $targetLang,
-            GlossaryEntries::fromEntries($entries)
+            GlossaryEntries::fromEntries($entries),
         );
     }
 
@@ -142,7 +163,7 @@ class Deepl implements PermissionProvider
     }
 
     public static function delete_unused_glossaries(
-        $excludeWhereNameStartsWith = null
+        $excludeWhereNameStartsWith = null,
     ) {
         $translator = self::create_translator();
 
@@ -160,7 +181,7 @@ class Deepl implements PermissionProvider
                     strncmp(
                         $glossary->name,
                         $excludeWhereNameStartsWith,
-                        strlen($excludeWhereNameStartsWith)
+                        strlen($excludeWhereNameStartsWith),
                     ) === 0)
             ) {
                 $translator->deleteGlossary($glossary);
