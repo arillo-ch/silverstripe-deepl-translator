@@ -2,9 +2,9 @@
 
 namespace Arillo\Deepl;
 
+use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\ReadonlyField;
-use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DB;
 use SilverStripe\ORM\DataObject;
 use TractorCow\Fluent\Model\Locale;
@@ -50,12 +50,30 @@ class Glossary extends DataObject
 
     public function getCMSFields()
     {
+        $source = [];
+
+        try {
+            $glossaries = Deepl::list_glossaries();
+            if ($glossaries) {
+                foreach ($glossaries as $g) {
+                    if (
+                        $g->sourceLang === $this->SourceLang &&
+                        $g->targetLang === $this->TargetLang
+                    ) {
+                        $source[$g->glossaryId] = $g->name;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            // API unavailable
+        }
+
         $fields = FieldList::create(
             ReadonlyField::create('SourceLang', 'Source Language'),
             ReadonlyField::create('TargetLang', 'Target Language'),
-            TextField::create('GlossaryId', 'Glossary ID')->setDescription(
-                'DeepL Glossary ID — manage glossaries at https://www.deepl.com/your-account/glossaries',
-            ),
+            DropdownField::create('GlossaryId', 'Glossary', $source)
+                ->setHasEmptyDefault(true)
+                ->setEmptyString('(none)'),
         );
 
         $this->extend('updateCMSFields', $fields);
