@@ -147,7 +147,15 @@ Arillo\Elements\ElementBase:
 
 ## Glossary
 
-If you want to use the glossary features of Deepl, you can edit your glossaries in SiteConfig.
+If you want to use the glossary features of Deepl, you can manage your glossaries in SiteConfig.
+
+There are two glossary modes available: **editor** (default) and **external**.
+
+### Editor mode (default)
+
+In editor mode, glossary entries are managed through an inline editor directly in SiteConfig. This lets you create and edit glossary entries within the CMS.
+
+This is the default mode and requires no additional configuration.
 
 You need to set a glossary name prefix in your `.env`, like so:
 
@@ -155,11 +163,29 @@ You need to set a glossary name prefix in your `.env`, like so:
 DEEPL_GLOSSARY_NAME_PREFIX="mysite-prod"
 ```
 
-These prefixes are usefull if you run your app in different environments, e.g.: `dev` or `live`.
+These prefixes are useful if you run your app in different environments, e.g.: `dev` or `live`.
 
 As of this writing, keep in mind that the deepl glossary API does not allow for updates of glossaries. So updates are deletes and creates. The purging mechanism takes the name prefixes into account. E.g.:
 If your env is set to `mysite-prod` it will only delete glossaries where the name starts with that prefix. This should help to prevent unwanted glossary deletes.
 
+### External mode
+
+In external mode, glossaries are managed externally (e.g. via the Deepl web interface or API). SiteConfig displays a GridField where you can select existing Deepl glossary IDs for each source/target language pair.
+
+To enable external mode, add this to your configuration:
+
+```yaml
+SilverStripe\SiteConfig\SiteConfig:
+  glossary_mode: external
+```
+
+Glossary records are auto-created for each language pair based on your Fluent locales. You then select the appropriate Deepl glossary ID from a dropdown populated by the glossaries available in your Deepl account for that language pair.
+
+## Style Rules
+
+Deepl supports style rules that allow you to control the tone and style of translations per target language. Style rule records are automatically created for each target language based on your Fluent locales.
+
+You can assign a style rule to each target language in SiteConfig under the "Deepl" tab. The available style rules are fetched from your Deepl account and shown in a dropdown per language.
 
 ## CMS
 
