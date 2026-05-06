@@ -14,7 +14,7 @@ class DataObjectWiseTranslationExtension extends DataExtension
 {
     use DeeplAdminTrait;
 
-    const TRANSLATABLE_DB_FIELDS = ['Varchar', 'Text', 'HTMLText'];
+    const TRANSLATABLE_DB_FIELDS = ["Varchar", "Text", "HTMLText"];
 
     private static $deepl_dataobject_included_relations = [];
 
@@ -25,7 +25,7 @@ class DataObjectWiseTranslationExtension extends DataExtension
 
     public function deeplTranslateWithRelations($toLocale, $fromLocale)
     {
-        if ($this->owner->hasMethod('beforeDeeplTranslateWithRelations')) {
+        if ($this->owner->hasMethod("beforeDeeplTranslateWithRelations")) {
             $this->owner->beforeDeeplTranslateWithRelations();
         }
         $path = Deepl::module_path();
@@ -42,10 +42,10 @@ class DataObjectWiseTranslationExtension extends DataExtension
             $class,
             $id,
             $toLocale,
-            $fromLocale
+            $fromLocale,
         );
 
-        if ($this->owner->hasMethod('afterDeeplTranslateWithRelations')) {
+        if ($this->owner->hasMethod("afterDeeplTranslateWithRelations")) {
             $this->owner->afterDeeplTranslateWithRelations();
         }
 
@@ -61,10 +61,10 @@ class DataObjectWiseTranslationExtension extends DataExtension
         string $classname,
         int $id,
         string $toLocale,
-        string $fromLocale
+        string $fromLocale,
     ) {
         $translations = FluentState::singleton()->withState(function (
-            $state
+            $state,
         ) use ($classname, $id, $toLocale, $fromLocale) {
             $state->setLocale($fromLocale);
             $recordsCollection = new ArrayList();
@@ -72,18 +72,18 @@ class DataObjectWiseTranslationExtension extends DataExtension
 
             $recordsCollection = self::add_to_records_collection(
                 $recordsCollection,
-                $sourceRecord
+                $sourceRecord,
             );
 
             $recordsCollection = self::add_relations_to_records_collection(
                 $recordsCollection,
-                $sourceRecord
+                $sourceRecord,
             );
 
             $result = self::get_translator_class()::run(
                 $recordsCollection,
                 Deepl::language_from_locale($toLocale),
-                Deepl::language_from_locale($fromLocale)
+                Deepl::language_from_locale($fromLocale),
             );
 
             return $result;
@@ -91,7 +91,7 @@ class DataObjectWiseTranslationExtension extends DataExtension
 
         FluentState::singleton()->withState(function ($state) use (
             $translations,
-            $toLocale
+            $toLocale,
         ) {
             $state->setLocale($toLocale);
             foreach ($translations as $translation) {
@@ -108,7 +108,7 @@ class DataObjectWiseTranslationExtension extends DataExtension
                         $record->hasExtension(Versioned::class) &&
                         $record->isPublished()
                     ) {
-                        $record->doPublish();
+                        $record->publishSingle();
                     }
                 }
             }
@@ -131,10 +131,10 @@ class DataObjectWiseTranslationExtension extends DataExtension
         string $classname,
         int $id,
         string $toLocale,
-        string $fromLocale
+        string $fromLocale,
     ) {
         $translations = FluentState::singleton()->withState(function (
-            $state
+            $state,
         ) use ($classname, $id, $toLocale, $fromLocale) {
             $state->setLocale($fromLocale);
             $recordsCollection = new ArrayList();
@@ -142,18 +142,18 @@ class DataObjectWiseTranslationExtension extends DataExtension
 
             $recordsCollection = self::add_to_records_collection(
                 $recordsCollection,
-                $sourceRecord
+                $sourceRecord,
             );
 
             $recordsCollection = self::add_relations_to_records_collection(
                 $recordsCollection,
-                $sourceRecord
+                $sourceRecord,
             );
 
             $result = ParallelTranslator::run(
                 $recordsCollection,
                 Deepl::language_from_locale($toLocale),
-                Deepl::language_from_locale($fromLocale)
+                Deepl::language_from_locale($fromLocale),
             );
 
             return $result;
@@ -161,7 +161,7 @@ class DataObjectWiseTranslationExtension extends DataExtension
 
         FluentState::singleton()->withState(function ($state) use (
             $translations,
-            $toLocale
+            $toLocale,
         ) {
             $state->setLocale($toLocale);
             foreach ($translations as $translation) {
@@ -194,7 +194,7 @@ class DataObjectWiseTranslationExtension extends DataExtension
      */
     public static function add_relations_to_records_collection(
         ArrayList $recordsCollection,
-        DataObject $rootRecord
+        DataObject $rootRecord,
     ): ArrayList {
         if (
             ($relations = $rootRecord->config()
@@ -213,12 +213,12 @@ class DataObjectWiseTranslationExtension extends DataExtension
                     foreach ($records as $record) {
                         $recordsCollection = self::add_to_records_collection(
                             $recordsCollection,
-                            $record
+                            $record,
                         );
 
                         self::add_relations_to_records_collection(
                             $recordsCollection,
-                            $record
+                            $record,
                         );
                     }
                 }
@@ -231,11 +231,11 @@ class DataObjectWiseTranslationExtension extends DataExtension
                 ) {
                     $recordsCollection = self::add_to_records_collection(
                         $recordsCollection,
-                        $record
+                        $record,
                     );
                     self::add_relations_to_records_collection(
                         $recordsCollection,
-                        $record
+                        $record,
                     );
                 }
             }
@@ -252,21 +252,21 @@ class DataObjectWiseTranslationExtension extends DataExtension
      */
     public static function add_to_records_collection(
         ArrayList $recordsCollection,
-        DataObject $record
+        DataObject $record,
     ): ArrayList {
         $classname = get_class($record);
         $dbFields = DataObject::getSchema()->databaseFields($classname, true);
-        $translateFields = Config::inst()->get($classname, 'translate');
+        $translateFields = Config::inst()->get($classname, "translate");
         $translateFields = array_filter($translateFields, function ($f) use (
-            $dbFields
+            $dbFields,
         ) {
             if (empty($dbFields[$f])) {
                 return false;
             }
 
             return in_array(
-                trim(preg_replace('/\([^)]*\)/', '', $dbFields[$f])),
-                self::TRANSLATABLE_DB_FIELDS
+                trim(preg_replace("/\([^)]*\)/", "", $dbFields[$f])),
+                self::TRANSLATABLE_DB_FIELDS,
             );
         });
 
@@ -282,9 +282,9 @@ class DataObjectWiseTranslationExtension extends DataExtension
             if ($sourceRecord->{$field}) {
                 $fields->push(
                     new ArrayData([
-                        'Field' => $field,
-                        'Source' => $sourceRecord->{$field},
-                    ])
+                        "Field" => $field,
+                        "Source" => $sourceRecord->{$field},
+                    ]),
                 );
             }
         }
@@ -292,12 +292,12 @@ class DataObjectWiseTranslationExtension extends DataExtension
         if ($fields->exists()) {
             $recordsCollection->push(
                 new ArrayData([
-                    'ClassName' => $classname,
-                    'ID' => $sourceRecord->ID,
-                    'Fields' => $fields->column('Field'),
-                    'Texts' => $fields->column('Source'),
-                    'Results' => [],
-                ])
+                    "ClassName" => $classname,
+                    "ID" => $sourceRecord->ID,
+                    "Fields" => $fields->column("Field"),
+                    "Texts" => $fields->column("Source"),
+                    "Results" => [],
+                ]),
             );
         }
 
