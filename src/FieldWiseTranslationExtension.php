@@ -11,6 +11,8 @@ use TractorCow\Fluent\Model\Locale;
 use SilverStripe\Security\Permission;
 use SilverStripe\ORM\FieldType\DBField;
 use TractorCow\Fluent\State\FluentState;
+use SilverStripe\VersionedAdmin\Controllers\HistoryViewerController;
+use SilverStripe\Control\Controller;
 
 class FieldWiseTranslationExtension extends DataExtension
 {
@@ -31,6 +33,18 @@ class FieldWiseTranslationExtension extends DataExtension
         if (!Permission::check(Deepl::USE_DEEPL)) {
             return;
         }
+
+        // Skip when the form is built for the version history viewer.
+        // The replaced title is an HTMLFragment whose form-schema serialisation
+        // ({"html": ...}) is rendered as "[object Object]" by the React diff
+        // view, masking the real field labels (Title, URLSegment, …).
+        if (
+            Controller::has_curr() &&
+            Controller::curr() instanceof HistoryViewerController
+        ) {
+            return;
+        }
+
         if (null !== Deepl::get_apikey()) {
             $targetLanguage = Deepl::language_from_locale(
                 $this->currentLocale()
