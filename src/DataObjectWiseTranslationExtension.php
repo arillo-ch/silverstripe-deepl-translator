@@ -257,6 +257,10 @@ class DataObjectWiseTranslationExtension extends DataExtension
         $classname = get_class($record);
         $dbFields = DataObject::getSchema()->databaseFields($classname, true);
         $translateFields = Config::inst()->get($classname, "translate");
+        // Fluent allows `translate: 'none'` (string) to disable translation
+        if (!is_array($translateFields)) {
+            return $recordsCollection;
+        }
         $translateFields = array_filter($translateFields, function ($f) use (
             $dbFields,
         ) {
